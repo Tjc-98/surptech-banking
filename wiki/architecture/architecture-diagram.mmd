@@ -17,6 +17,13 @@ flowchart TD
         creditProfile["creditProfile\n---\ncurrentBalance\nspendBalance\ninterestRate"]
     end
 
+    subgraph Database["Database"]
+        direction LR
+        postgres["postgres"]
+        sqlite["sqlite"]
+        postgres ~~~ sqlite
+    end
+
     %% Data aggregation flow
     Client -- "getCustomerCreditInfo\n(socialSecurityNumber)" --> dataAggregator
     dataAggregator -- "customerInfo\ncreditInfo" --> Client
@@ -36,3 +43,4 @@ flowchart TD
     %% Anchors to force vertical layout
     Client -- "communicate" --> Service
     Service -- "communicate" --> DataStore
+    DataStore -- "communicate" --> Database

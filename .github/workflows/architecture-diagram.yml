@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Remove old architecture diagram image if exists
         run: |
@@ -27,16 +29,20 @@ jobs:
 
       - name: Compile Mermaid diagram to JPG
         run: |
+          echo "Start building image out of architecture"
           mmdc -i wiki/architecture/architecture-diagram.mmd \
                -o wiki/architecture/architecture-diagram.jpg \
                -b white
+          echo "Image created."
 
       - name: Commit and push updated diagram
         run: |
+          echo "Pushing image to repo"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add wiki/architecture/architecture-diagram.jpg
-          git commit -m "update architecture diagram update"
+          git commit -m "chore: update architecture diagram"
           git push
+          echo "Push done"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
