@@ -1,0 +1,42 @@
+name: Compile Architecture Diagram
+
+on:
+  push:
+    paths:
+      - 'wiki/architecture/architecture-diagram.mmd'
+
+jobs:
+  compile-diagram:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Remove old architecture diagram image if exists
+        run: |
+          if [ -f "wiki/architecture/architecture-diagram.jpg" ]; then
+            rm wiki/architecture/architecture-diagram.jpg
+            echo "Old architecture-diagram.jpg removed."
+          else
+            echo "No existing architecture-diagram.jpg found, skipping removal."
+          fi
+
+      - name: Install Mermaid CLI
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Compile Mermaid diagram to JPG
+        run: |
+          mmdc -i wiki/architecture/architecture-diagram.mmd \
+               -o wiki/architecture/architecture-diagram.jpg \
+               -b white
+
+      - name: Commit and push updated diagram
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wiki/architecture/architecture-diagram.jpg
+          git commit -m "update architecture diagram update"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
