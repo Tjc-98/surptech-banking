@@ -31,9 +31,11 @@ jobs:
       - name: Compile Mermaid diagram to PNG
         run: |
           echo "Start building image out of architecture"
+          echo '{"args":["--no-sandbox","--disable-setuid-sandbox"]}' > /tmp/puppeteer-config.json
           mmdc -i wiki/architecture/architecture-diagram.mmd \
                -o wiki/architecture/architecture-diagram.png \
-               -b white
+               -b white \
+               -p /tmp/puppeteer-config.json
           echo "Image created."
 
       - name: Commit and push updated diagram
