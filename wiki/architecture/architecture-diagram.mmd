@@ -1,0 +1,38 @@
+flowchart TD
+    subgraph Client["Client"]
+        direction LR
+        Tester["Tester\n(testingServices)"]
+        Webpage["Webpage\n(userInterface)"]
+    end
+
+    subgraph Service["Service"]
+        direction LR
+        authServer["authServer"]
+        dataAggregator["dataAggregator"]
+    end
+
+    subgraph DataStore["DataStore"]
+        direction TB
+        customerProfile["customerProfile\n---\nfirstName\nlastName\naddress\nsocialSecurityNumber"]
+        creditProfile["creditProfile\n---\ncurrentBalance\nspendBalance\ninterestRate"]
+    end
+
+    %% Data aggregation flow
+    Client -- "getCustomerCreditInfo\n(socialSecurityNumber)" --> dataAggregator
+    dataAggregator -- "customerInfo\ncreditInfo" --> Client
+
+    %% Auth flow
+    Client -- "sendLoginInfo\n(username, password)" --> authServer
+    authServer -- "token" --> Client
+
+    %% Token validation - internal services
+    dataAggregator -- "validateToken" --> authServer
+    authServer -- "accepted/invalid" --> dataAggregator
+
+    %% DataStore lookups
+    dataAggregator -- "getPersonInfo\n(socialSecurityNumber)" --> customerProfile
+    dataAggregator -- "getCreditInfo\n(socialSecurityNumber)" --> creditProfile
+
+    %% Anchors to force vertical layout
+    Client -- "communicate" --> Service
+    Service -- "communicate" --> DataStore
