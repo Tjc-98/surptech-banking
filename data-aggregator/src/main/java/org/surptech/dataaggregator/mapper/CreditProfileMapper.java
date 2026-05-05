@@ -23,20 +23,4 @@ public class CreditProfileMapper {
                 .interestRate(response.getInterestRate())
                 .build();
     }
-
-    /**
-     * Convert internal entity to response DTO
-     */
-    public static CreditProfileResponse toResponse(CreditProfileEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-        
-        return CreditProfileResponse.builder()
-                .socialSecurityNumber(entity.getSocialSecurityNumber())
-                .currentBalance(entity.getCurrentBalance())
-                .spendBalance(entity.getSpendBalance())
-                .interestRate(entity.getInterestRate())
-                .build();
-    }
 }

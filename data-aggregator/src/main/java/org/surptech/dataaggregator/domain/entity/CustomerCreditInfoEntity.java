@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
  * No Jackson annotations - not meant for serialization.
  */
 @Data
-@Builder(builderClassName = "Builder", toBuilder = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerCreditInfoEntity {

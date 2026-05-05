@@ -23,20 +23,4 @@ public class CustomerProfileMapper {
                 .address(response.getAddress())
                 .build();
     }
-
-    /**
-     * Convert internal entity to response DTO
-     */
-    public static CustomerProfileResponse toResponse(CustomerProfileEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-        
-        return CustomerProfileResponse.builder()
-                .socialSecurityNumber(entity.getSocialSecurityNumber())
-                .firstName(entity.getFirstName())
-                .lastName(entity.getLastName())
-                .address(entity.getAddress())
-                .build();
-    }
 }

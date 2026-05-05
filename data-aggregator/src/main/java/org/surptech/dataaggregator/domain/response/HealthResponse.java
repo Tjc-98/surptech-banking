@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.Map;
 
 @Data
-@Builder(builderClassName = "Builder", toBuilder = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)

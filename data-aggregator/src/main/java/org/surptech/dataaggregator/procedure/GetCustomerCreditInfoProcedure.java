@@ -5,7 +5,6 @@ import org.surptech.dataaggregator.client.CreditProfileClient;
 import org.surptech.dataaggregator.client.CustomerProfileClient;
 import org.surptech.dataaggregator.config.ApplicationContextProvider;
 import org.surptech.dataaggregator.domain.response.CustomerCreditInfoResponse;
-import org.surptech.dataaggregator.domain.request.EmptyRequest;
 import org.surptech.dataaggregator.domain.entity.CreditProfileEntity;
 import org.surptech.dataaggregator.domain.entity.CustomerCreditInfoEntity;
 import org.surptech.dataaggregator.domain.entity.CustomerProfileEntity;
@@ -14,15 +13,13 @@ import org.surptech.dataaggregator.mapper.CustomerCreditInfoMapper;
 import java.util.Optional;
 
 @Slf4j
-public class GetCustomerCreditInfoProcedure extends BaseProcedure<EmptyRequest, CustomerCreditInfoResponse> {
+public class GetCustomerCreditInfoProcedure extends BaseProcedure<String, CustomerCreditInfoResponse> {
 
-    private final String socialSecurityNumber;
     private final CustomerProfileClient customerProfileClient;
     private final CreditProfileClient creditProfileClient;
 
     public GetCustomerCreditInfoProcedure(String socialSecurityNumber) {
-        super(EmptyRequest.builder().build());
-        this.socialSecurityNumber = socialSecurityNumber;
+        super(socialSecurityNumber);
         this.customerProfileClient = ApplicationContextProvider.getApplicationContext()
                 .getBean(CustomerProfileClient.class);
         this.creditProfileClient = ApplicationContextProvider.getApplicationContext()
@@ -31,23 +28,23 @@ public class GetCustomerCreditInfoProcedure extends BaseProcedure<EmptyRequest, 
 
     @Override
     public CustomerCreditInfoResponse executeProcedure() {
-        log.info("Aggregating customer and credit information for SSN: {}", socialSecurityNumber);
+        log.info("Aggregating customer and credit information for SSN: {}", request);
 
         // Fetch customer profile entity
-        Optional<CustomerProfileEntity> customerProfile = customerProfileClient.getCustomerProfile(socialSecurityNumber);
+        Optional<CustomerProfileEntity> customerProfile = customerProfileClient.getCustomerProfile(request);
         
         // Fetch credit profile entity
-        Optional<CreditProfileEntity> creditProfile = creditProfileClient.getCreditProfile(socialSecurityNumber);
+        Optional<CreditProfileEntity> creditProfile = creditProfileClient.getCreditProfile(request);
 
         // If neither profile exists, return null
         if (customerProfile.isEmpty() && creditProfile.isEmpty()) {
-            log.warn("No customer or credit profile found for SSN: {}", socialSecurityNumber);
+            log.warn("No customer or credit profile found for SSN: {}", request);
             return null;
         }
 
         // Build aggregated entity
         CustomerCreditInfoEntity.Builder builder = CustomerCreditInfoEntity.builder()
-                .socialSecurityNumber(socialSecurityNumber);
+                .socialSecurityNumber(request);
 
         // Add customer profile data if available
         if (customerProfile.isPresent()) {
@@ -70,7 +67,7 @@ public class GetCustomerCreditInfoProcedure extends BaseProcedure<EmptyRequest, 
         // Convert entity to response DTO
         response = CustomerCreditInfoMapper.toResponse(entity);
         
-        log.info("Successfully aggregated customer and credit information for SSN: {}", socialSecurityNumber);
+        log.info("Successfully aggregated customer and credit information for SSN: {}", request);
 
         return response;
     }

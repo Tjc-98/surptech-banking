@@ -2,7 +2,6 @@ package org.surptech.dataaggregator.controller;
 
 import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,7 +22,6 @@ public class CustomerBankingController extends BaseController {
         this.authServerClient = authServerClient;
     }
 
-    @ManagedOperation(description = "Retrieve aggregated customer and credit information by social security number")
     @PostMapping(value = "/info", consumes = "application/json", produces = "application/json")
     public ResponseEntity<CustomerCreditInfoResponse> getCustomerCreditInfo(
             @NonNull @RequestBody CustomerInfoRequest request,
@@ -33,7 +31,7 @@ public class CustomerBankingController extends BaseController {
         if (authToken != null && !authToken.isEmpty()) {
             boolean isValid = authServerClient.validateToken(authToken);
             if (!isValid) {
-                return ResponseEntity.status(401).build(); // Unauthorized
+                return ResponseEntity.status(401).build();
             }
         }
 
