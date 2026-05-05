@@ -41,6 +41,6 @@ flowchart TD
     dataAggregator -- "getCreditInfo\n(socialSecurityNumber)" --> creditProfile
 
     %% Anchors to force vertical layout
-    Client -- "communicate" --> Service
-    Service -- "communicate" --> DataStore
-    DataStore -- "communicate" --> Database
+    Client --> Service
+    Service --> DataStore
+    DataStore --> Database
