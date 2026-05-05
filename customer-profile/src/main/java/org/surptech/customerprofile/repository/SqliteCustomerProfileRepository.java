@@ -22,12 +22,12 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
         log.info("SqliteCustomerProfileRepository initialized");
     }
 
-    private final RowMapper<CustomerProfile> rowMapper = (rs, rowNum) -> 
+    private final RowMapper<CustomerProfile> rowMapper = (resultSet, rowNumber) -> 
         CustomerProfile.builder()
-            .socialSecurityNumber(rs.getString("social_security_number"))
-            .firstName(rs.getString("first_name"))
-            .lastName(rs.getString("last_name"))
-            .address(rs.getString("address"))
+            .socialSecurityNumber(resultSet.getString("social_security_number"))
+            .firstName(resultSet.getString("first_name"))
+            .lastName(resultSet.getString("last_name"))
+            .address(resultSet.getString("address"))
             .build();
 
     @Override
@@ -48,9 +48,9 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
 
     private CustomerProfile insert(CustomerProfile customerProfile) {
         log.info("Inserting new customer profile: {}", customerProfile.getSocialSecurityNumber());
-        String sql = "INSERT INTO customer_profile (social_security_number, first_name, last_name, address) VALUES (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO customer_profile (social_security_number, first_name, last_name, address) VALUES (?, ?, ?, ?)";
         
-        jdbcTemplate.update(sql,
+        jdbcTemplate.update(sqlQuery,
             customerProfile.getSocialSecurityNumber(),
             customerProfile.getFirstName(),
             customerProfile.getLastName(),
@@ -63,9 +63,9 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
 
     private CustomerProfile update(CustomerProfile customerProfile) {
         log.info("Updating customer profile: {}", customerProfile.getSocialSecurityNumber());
-        String sql = "UPDATE customer_profile SET first_name = ?, last_name = ?, address = ? WHERE social_security_number = ?";
+        String sqlQuery = "UPDATE customer_profile SET first_name = ?, last_name = ?, address = ? WHERE social_security_number = ?";
         
-        jdbcTemplate.update(sql,
+        jdbcTemplate.update(sqlQuery,
             customerProfile.getFirstName(),
             customerProfile.getLastName(),
             customerProfile.getAddress(),
@@ -79,9 +79,9 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
     @Override
     public Optional<CustomerProfile> findBySocialSecurityNumber(String socialSecurityNumber) {
         log.debug("Finding customer profile by SSN: {}", socialSecurityNumber);
-        String sql = "SELECT * FROM customer_profile WHERE social_security_number = ?";
+        String sqlQuery = "SELECT * FROM customer_profile WHERE social_security_number = ?";
         
-        List<CustomerProfile> results = jdbcTemplate.query(sql, rowMapper, socialSecurityNumber);
+        List<CustomerProfile> results = jdbcTemplate.query(sqlQuery, rowMapper, socialSecurityNumber);
         
         if (results.isEmpty()) {
             log.debug("Customer profile not found for SSN: {}", socialSecurityNumber);
@@ -95,8 +95,8 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
     @Override
     public List<CustomerProfile> findAll() {
         log.info("Retrieving all customer profiles");
-        String sql = "SELECT * FROM customer_profile";
-        List<CustomerProfile> profiles = jdbcTemplate.query(sql, rowMapper);
+        String sqlQuery = "SELECT * FROM customer_profile";
+        List<CustomerProfile> profiles = jdbcTemplate.query(sqlQuery, rowMapper);
         log.info("Retrieved {} customer profiles", profiles.size());
         return profiles;
     }
@@ -104,8 +104,8 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
     @Override
     public void deleteBySocialSecurityNumber(String socialSecurityNumber) {
         log.info("Deleting customer profile with SSN: {}", socialSecurityNumber);
-        String sql = "DELETE FROM customer_profile WHERE social_security_number = ?";
-        int rowsAffected = jdbcTemplate.update(sql, socialSecurityNumber);
+        String sqlQuery = "DELETE FROM customer_profile WHERE social_security_number = ?";
+        int rowsAffected = jdbcTemplate.update(sqlQuery, socialSecurityNumber);
         log.info("Deleted {} customer profile(s)", rowsAffected);
     }
 }

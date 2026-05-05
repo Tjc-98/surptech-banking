@@ -68,10 +68,10 @@ public class RequestResponseLoggingFilter implements Filter {
         }
         
         // Log request body
-        byte[] content = request.getContentAsByteArray();
-        if (content.length > 0) {
-            String body = new String(content, StandardCharsets.UTF_8);
-            requestLog.append("Body: ").append(body).append("\n");
+        byte[] contentBytes = request.getContentAsByteArray();
+        if (contentBytes.length > 0) {
+            String requestBody = new String(contentBytes, StandardCharsets.UTF_8);
+            requestLog.append("Body: ").append(requestBody).append("\n");
         }
         
         requestLog.append("======================================");
@@ -92,10 +92,10 @@ public class RequestResponseLoggingFilter implements Filter {
         });
         
         // Log response body
-        byte[] content = response.getContentAsByteArray();
-        if (content.length > 0) {
-            String body = new String(content, StandardCharsets.UTF_8);
-            responseLog.append("Body: ").append(body).append("\n");
+        byte[] contentBytes = response.getContentAsByteArray();
+        if (contentBytes.length > 0) {
+            String responseBody = new String(contentBytes, StandardCharsets.UTF_8);
+            responseLog.append("Body: ").append(responseBody).append("\n");
         }
         
         responseLog.append("=======================================");

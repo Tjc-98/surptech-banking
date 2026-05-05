@@ -22,7 +22,7 @@ public class RepositoryConfiguration {
 
     /**
      * Creates and configures the CustomerProfileRepository bean based on the database type.
-     * 
+     *
      * @param jdbcTemplate the JdbcTemplate to use for database operations
      * @return the appropriate CustomerProfileRepository implementation
      * @throws IllegalArgumentException if the database type is not supported
@@ -30,7 +30,7 @@ public class RepositoryConfiguration {
     @Bean
     public CustomerProfileRepository customerProfileRepository(JdbcTemplate jdbcTemplate) {
         log.info("Configuring CustomerProfileRepository with database type: {}", databaseType);
-        
+
         CustomerProfileRepository repository = switch (databaseType.toLowerCase()) {
             case "sqlite" -> {
                 log.info("Initializing SqliteCustomerProfileRepository");
@@ -42,11 +42,11 @@ public class RepositoryConfiguration {
             default -> {
                 log.error("Unsupported database type: {}. Supported types: sqlite", databaseType);
                 throw new IllegalArgumentException(
-                    "Unsupported database type: " + databaseType + ". Supported types: sqlite"
+                        "Unsupported database type: " + databaseType + ". Supported types: sqlite"
                 );
             }
         };
-        
+
         log.info("CustomerProfileRepository configured successfully");
         return repository;
     }

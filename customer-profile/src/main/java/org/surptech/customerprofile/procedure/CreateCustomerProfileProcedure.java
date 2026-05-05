@@ -1,9 +1,9 @@
 package org.surptech.customerprofile.procedure;
 
+import lombok.extern.slf4j.Slf4j;
 import org.surptech.customerprofile.domain.CustomerProfile;
 import org.surptech.customerprofile.domain.CustomerProfileRequest;
 import org.surptech.customerprofile.repository.CustomerProfileRepository;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CreateCustomerProfileProcedure extends BaseProcedure<CustomerProfileRequest, CustomerProfile> {

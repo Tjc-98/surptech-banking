@@ -1,24 +1,24 @@
 package org.surptech.customerprofile.procedure;
 
+import lombok.Getter;
 import org.surptech.customerprofile.config.ApplicationContextProvider;
 import org.surptech.customerprofile.service.ApplicationServices;
-import lombok.Getter;
 
 @Getter
-public abstract class BaseProcedure<RT, RS> {
+public abstract class BaseProcedure<RequestType, ResponseType> {
     protected final ApplicationServices applicationServices;
 
-    RT request;
-    RS response;
+    RequestType request;
+    ResponseType response;
 
     protected BaseProcedure() {
         this.applicationServices = ApplicationContextProvider.getBean(ApplicationServices.class);
     }
 
-    protected BaseProcedure(RT request) {
+    protected BaseProcedure(RequestType request) {
         this.applicationServices = ApplicationContextProvider.getBean(ApplicationServices.class);
         this.request = request;
     }
 
-    public abstract RS executeProcedure();
+    public abstract ResponseType executeProcedure();
 }
