@@ -1,7 +1,7 @@
 package org.surptech.dataaggregator.mapper;
 
-import org.surptech.dataaggregator.domain.CustomerProfileResponse;
-import org.surptech.dataaggregator.entity.CustomerProfileEntity;
+import org.surptech.dataaggregator.domain.response.CustomerProfileResponse;
+import org.surptech.dataaggregator.domain.entity.CustomerProfileEntity;
 
 /**
  * Mapper to convert between customer profile DTOs and internal entities.

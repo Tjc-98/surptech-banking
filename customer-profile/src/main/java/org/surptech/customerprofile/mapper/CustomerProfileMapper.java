@@ -1,8 +1,8 @@
 package org.surptech.customerprofile.mapper;
 
-import org.surptech.customerprofile.domain.CustomerProfileRequest;
-import org.surptech.customerprofile.domain.CustomerProfileResponse;
-import org.surptech.customerprofile.entity.CustomerProfileEntity;
+import org.surptech.customerprofile.domain.request.CustomerProfileRequest;
+import org.surptech.customerprofile.domain.response.CustomerProfileResponse;
+import org.surptech.customerprofile.domain.entity.CustomerProfileEntity;
 
 /**
  * Mapper to convert between DTOs and internal entities.

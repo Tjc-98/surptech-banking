@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.surptech.dataaggregator.domain.HealthResponse;
-import org.surptech.dataaggregator.domain.ServiceHealth;
+import org.surptech.dataaggregator.domain.response.HealthResponse;
+import org.surptech.dataaggregator.domain.response.ServiceHealthResponse;
 import org.surptech.dataaggregator.health.AuthServerHealthIndicator;
 import org.surptech.dataaggregator.health.CreditProfileHealthIndicator;
 import org.surptech.dataaggregator.health.CustomerProfileHealthIndicator;
@@ -32,11 +32,11 @@ public class HealthController {
 
     @GetMapping("/health")
     public ResponseEntity<HealthResponse> servicesHealth() {
-        Map<String, ServiceHealth> components = new HashMap<>();
+        Map<String, ServiceHealthResponse> components = new HashMap<>();
 
         // Check customer-profile
         boolean customerProfileUp = customerProfileHealthIndicator.isHealthy();
-        components.put("customerProfile", ServiceHealth.builder()
+        components.put("customerProfile", ServiceHealthResponse.builder()
                 .status(customerProfileHealthIndicator.getStatus())
                 .service("customer-profile")
                 .url("http://localhost:5551")
@@ -45,7 +45,7 @@ public class HealthController {
 
         // Check credit-profile
         boolean creditProfileUp = creditProfileHealthIndicator.isHealthy();
-        components.put("creditProfile", ServiceHealth.builder()
+        components.put("creditProfile", ServiceHealthResponse.builder()
                 .status(creditProfileHealthIndicator.getStatus())
                 .service("credit-profile")
                 .url("http://localhost:5552")
@@ -54,7 +54,7 @@ public class HealthController {
 
         // Check auth-server
         boolean authServerUp = authServerHealthIndicator.isHealthy();
-        components.put("authServer", ServiceHealth.builder()
+        components.put("authServer", ServiceHealthResponse.builder()
                 .status(authServerHealthIndicator.getStatus())
                 .service("auth-server")
                 .url("http://localhost:5553")

@@ -1,4 +1,4 @@
-package org.surptech.dataaggregator.domain;
+package org.surptech.dataaggregator.domain.request;
 
 import lombok.Builder;
 import lombok.Data;

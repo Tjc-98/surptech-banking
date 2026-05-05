@@ -3,8 +3,8 @@ package org.surptech.dataaggregator.client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.surptech.dataaggregator.domain.CustomerProfileResponse;
-import org.surptech.dataaggregator.entity.CustomerProfileEntity;
+import org.surptech.dataaggregator.domain.response.CustomerProfileResponse;
+import org.surptech.dataaggregator.domain.entity.CustomerProfileEntity;
 import org.surptech.dataaggregator.mapper.CustomerProfileMapper;
 import org.surptech.dataaggregator.service.ApplicationServices;
 

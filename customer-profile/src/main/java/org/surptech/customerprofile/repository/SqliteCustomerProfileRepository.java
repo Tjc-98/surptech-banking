@@ -3,7 +3,7 @@ package org.surptech.customerprofile.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.surptech.customerprofile.entity.CustomerProfileEntity;
+import org.surptech.customerprofile.domain.entity.CustomerProfileEntity;
 
 import java.util.List;
 import java.util.Optional;

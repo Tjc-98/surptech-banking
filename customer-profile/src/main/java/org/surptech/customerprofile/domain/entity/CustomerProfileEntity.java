@@ -1,4 +1,4 @@
-package org.surptech.customerprofile.entity;
+package org.surptech.customerprofile.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

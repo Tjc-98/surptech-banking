@@ -3,8 +3,8 @@ package org.surptech.dataaggregator.client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.surptech.dataaggregator.domain.CreditProfileResponse;
-import org.surptech.dataaggregator.entity.CreditProfileEntity;
+import org.surptech.dataaggregator.domain.response.CreditProfileResponse;
+import org.surptech.dataaggregator.domain.entity.CreditProfileEntity;
 import org.surptech.dataaggregator.mapper.CreditProfileMapper;
 import org.surptech.dataaggregator.service.ApplicationServices;
 

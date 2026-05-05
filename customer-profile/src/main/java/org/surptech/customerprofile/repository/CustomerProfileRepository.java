@@ -1,6 +1,6 @@
 package org.surptech.customerprofile.repository;
 
-import org.surptech.customerprofile.entity.CustomerProfileEntity;
+import org.surptech.customerprofile.domain.entity.CustomerProfileEntity;
 
 import java.util.List;
 import java.util.Optional;

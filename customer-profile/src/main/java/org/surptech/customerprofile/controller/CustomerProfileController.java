@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.surptech.customerprofile.domain.CustomerProfileResponse;
-import org.surptech.customerprofile.domain.CustomerProfileRequest;
-import org.surptech.customerprofile.domain.GetCustomerProfileRequest;
+import org.surptech.customerprofile.domain.response.CustomerProfileResponse;
+import org.surptech.customerprofile.domain.request.CustomerProfileRequest;
+import org.surptech.customerprofile.domain.request.GetCustomerProfileRequest;
 import org.surptech.customerprofile.procedure.CreateCustomerProfileProcedure;
 import org.surptech.customerprofile.procedure.GetCustomerProfileProcedure;
 

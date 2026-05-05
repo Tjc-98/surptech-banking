@@ -1,4 +1,4 @@
-package org.surptech.customerprofile.domain;
+package org.surptech.customerprofile.domain.request;
 
 import lombok.Builder;
 

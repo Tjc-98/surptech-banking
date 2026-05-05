@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.surptech.dataaggregator.client.AuthServerClient;
-import org.surptech.dataaggregator.domain.CustomerCreditInfoResponse;
-import org.surptech.dataaggregator.domain.CustomerInfoRequest;
+import org.surptech.dataaggregator.domain.response.CustomerCreditInfoResponse;
+import org.surptech.dataaggregator.domain.request.CustomerInfoRequest;
 import org.surptech.dataaggregator.procedure.GetCustomerCreditInfoProcedure;
 
 @RestController

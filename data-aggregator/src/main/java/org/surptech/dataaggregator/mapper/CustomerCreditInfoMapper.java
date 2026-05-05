@@ -1,7 +1,7 @@
 package org.surptech.dataaggregator.mapper;
 
-import org.surptech.dataaggregator.domain.CustomerCreditInfoResponse;
-import org.surptech.dataaggregator.entity.CustomerCreditInfoEntity;
+import org.surptech.dataaggregator.domain.response.CustomerCreditInfoResponse;
+import org.surptech.dataaggregator.domain.entity.CustomerCreditInfoEntity;
 
 /**
  * Mapper to convert between aggregated customer credit info DTOs and internal entities.

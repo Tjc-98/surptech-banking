@@ -1,7 +1,7 @@
 package org.surptech.dataaggregator.mapper;
 
-import org.surptech.dataaggregator.domain.CreditProfileResponse;
-import org.surptech.dataaggregator.entity.CreditProfileEntity;
+import org.surptech.dataaggregator.domain.response.CreditProfileResponse;
+import org.surptech.dataaggregator.domain.entity.CreditProfileEntity;
 
 /**
  * Mapper to convert between credit profile DTOs and internal entities.

@@ -1,4 +1,4 @@
-package org.surptech.dataaggregator.domain;
+package org.surptech.dataaggregator.domain.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ServiceHealth {
+public class ServiceHealthResponse {
 
     @JsonProperty("status")
     private String status;

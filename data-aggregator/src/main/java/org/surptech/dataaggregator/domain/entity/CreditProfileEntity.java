@@ -1,4 +1,4 @@
-package org.surptech.dataaggregator.entity;
+package org.surptech.dataaggregator.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

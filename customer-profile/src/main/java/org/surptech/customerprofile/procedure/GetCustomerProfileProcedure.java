@@ -1,9 +1,9 @@
 package org.surptech.customerprofile.procedure;
 
 import lombok.extern.slf4j.Slf4j;
-import org.surptech.customerprofile.domain.CustomerProfileResponse;
-import org.surptech.customerprofile.domain.EmptyRequest;
-import org.surptech.customerprofile.entity.CustomerProfileEntity;
+import org.surptech.customerprofile.domain.response.CustomerProfileResponse;
+import org.surptech.customerprofile.domain.request.EmptyRequest;
+import org.surptech.customerprofile.domain.entity.CustomerProfileEntity;
 import org.surptech.customerprofile.mapper.CustomerProfileMapper;
 import org.surptech.customerprofile.repository.CustomerProfileRepository;
 

@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.surptech.dataaggregator.client.CreditProfileClient;
 import org.surptech.dataaggregator.client.CustomerProfileClient;
 import org.surptech.dataaggregator.config.ApplicationContextProvider;
-import org.surptech.dataaggregator.domain.CustomerCreditInfoResponse;
-import org.surptech.dataaggregator.domain.EmptyRequest;
-import org.surptech.dataaggregator.entity.CreditProfileEntity;
-import org.surptech.dataaggregator.entity.CustomerCreditInfoEntity;
-import org.surptech.dataaggregator.entity.CustomerProfileEntity;
+import org.surptech.dataaggregator.domain.response.CustomerCreditInfoResponse;
+import org.surptech.dataaggregator.domain.request.EmptyRequest;
+import org.surptech.dataaggregator.domain.entity.CreditProfileEntity;
+import org.surptech.dataaggregator.domain.entity.CustomerCreditInfoEntity;
+import org.surptech.dataaggregator.domain.entity.CustomerProfileEntity;
 import org.surptech.dataaggregator.mapper.CustomerCreditInfoMapper;
 
 import java.util.Optional;

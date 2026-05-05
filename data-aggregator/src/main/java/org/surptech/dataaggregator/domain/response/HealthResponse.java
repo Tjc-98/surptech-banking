@@ -1,4 +1,4 @@
-package org.surptech.dataaggregator.domain;
+package org.surptech.dataaggregator.domain.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,5 +20,5 @@ public class HealthResponse {
     private String status;
 
     @JsonProperty("components")
-    private Map<String, ServiceHealth> components;
+    private Map<String, ServiceHealthResponse> components;
 }
