@@ -10,7 +10,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class BaseController {
 
     public <RT, RS> RS runProcedure(BaseProcedure<RT, RS> procedure) {
-        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest httpServletRequest =
+                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
         String path = httpServletRequest.getServletPath();
 

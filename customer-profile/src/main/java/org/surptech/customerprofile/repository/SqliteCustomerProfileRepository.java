@@ -1,0 +1,111 @@
+package org.surptech.customerprofile.repository;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.surptech.customerprofile.domain.CustomerProfile;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * SQLite implementation of the CustomerProfileRepository interface.
+ * This class handles all SQLite-specific database operations for customer profiles.
+ */
+@Slf4j
+public class SqliteCustomerProfileRepository implements CustomerProfileRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public SqliteCustomerProfileRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        log.info("SqliteCustomerProfileRepository initialized");
+    }
+
+    private final RowMapper<CustomerProfile> rowMapper = (rs, rowNum) -> 
+        CustomerProfile.builder()
+            .socialSecurityNumber(rs.getString("social_security_number"))
+            .firstName(rs.getString("first_name"))
+            .lastName(rs.getString("last_name"))
+            .address(rs.getString("address"))
+            .build();
+
+    @Override
+    public CustomerProfile save(CustomerProfile customerProfile) {
+        log.debug("Saving customer profile with SSN: {}", customerProfile.getSocialSecurityNumber());
+        
+        // Check if customer already exists by SSN
+        Optional<CustomerProfile> existing = findBySocialSecurityNumber(customerProfile.getSocialSecurityNumber());
+        
+        if (existing.isPresent()) {
+            log.debug("Customer profile exists, updating");
+            return update(customerProfile);
+        } else {
+            log.debug("Customer profile does not exist, inserting");
+            return insert(customerProfile);
+        }
+    }
+
+    private CustomerProfile insert(CustomerProfile customerProfile) {
+        log.info("Inserting new customer profile: {}", customerProfile.getSocialSecurityNumber());
+        String sql = "INSERT INTO customer_profile (social_security_number, first_name, last_name, address) VALUES (?, ?, ?, ?)";
+        
+        jdbcTemplate.update(sql,
+            customerProfile.getSocialSecurityNumber(),
+            customerProfile.getFirstName(),
+            customerProfile.getLastName(),
+            customerProfile.getAddress()
+        );
+
+        log.info("Customer profile inserted successfully");
+        return customerProfile;
+    }
+
+    private CustomerProfile update(CustomerProfile customerProfile) {
+        log.info("Updating customer profile: {}", customerProfile.getSocialSecurityNumber());
+        String sql = "UPDATE customer_profile SET first_name = ?, last_name = ?, address = ? WHERE social_security_number = ?";
+        
+        jdbcTemplate.update(sql,
+            customerProfile.getFirstName(),
+            customerProfile.getLastName(),
+            customerProfile.getAddress(),
+            customerProfile.getSocialSecurityNumber()
+        );
+        
+        log.info("Customer profile updated successfully");
+        return customerProfile;
+    }
+
+    @Override
+    public Optional<CustomerProfile> findBySocialSecurityNumber(String socialSecurityNumber) {
+        log.debug("Finding customer profile by SSN: {}", socialSecurityNumber);
+        String sql = "SELECT * FROM customer_profile WHERE social_security_number = ?";
+        
+        List<CustomerProfile> results = jdbcTemplate.query(sql, rowMapper, socialSecurityNumber);
+        
+        if (results.isEmpty()) {
+            log.debug("Customer profile not found for SSN: {}", socialSecurityNumber);
+        } else {
+            log.debug("Customer profile found for SSN: {}", socialSecurityNumber);
+        }
+        
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
+
+    @Override
+    public List<CustomerProfile> findAll() {
+        log.info("Retrieving all customer profiles");
+        String sql = "SELECT * FROM customer_profile";
+        List<CustomerProfile> profiles = jdbcTemplate.query(sql, rowMapper);
+        log.info("Retrieved {} customer profiles", profiles.size());
+        return profiles;
+    }
+
+    @Override
+    public void deleteBySocialSecurityNumber(String socialSecurityNumber) {
+        log.info("Deleting customer profile with SSN: {}", socialSecurityNumber);
+        String sql = "DELETE FROM customer_profile WHERE social_security_number = ?";
+        int rowsAffected = jdbcTemplate.update(sql, socialSecurityNumber);
+        log.info("Deleted {} customer profile(s)", rowsAffected);
+    }
+}

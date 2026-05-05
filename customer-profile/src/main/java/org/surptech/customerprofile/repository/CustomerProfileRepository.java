@@ -1,83 +1,44 @@
 package org.surptech.customerprofile.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
 import org.surptech.customerprofile.domain.CustomerProfile;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class CustomerProfileRepository {
+/**
+ * Repository interface for managing customer profile data.
+ * Implementations of this interface provide database-specific operations.
+ */
+public interface CustomerProfileRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    /**
+     * Saves a customer profile. If the profile already exists, it will be updated.
+     * 
+     * @param customerProfile the customer profile to save
+     * @return the saved customer profile
+     */
+    CustomerProfile save(CustomerProfile customerProfile);
 
-    public CustomerProfileRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    /**
+     * Finds a customer profile by social security number.
+     * 
+     * @param socialSecurityNumber the social security number to search for
+     * @return an Optional containing the customer profile if found, empty otherwise
+     */
+    Optional<CustomerProfile> findBySocialSecurityNumber(String socialSecurityNumber);
 
-    private final RowMapper<CustomerProfile> rowMapper = (rs, rowNum) -> 
-        CustomerProfile.builder()
-            .socialSecurityNumber(rs.getString("social_security_number"))
-            .firstName(rs.getString("first_name"))
-            .lastName(rs.getString("last_name"))
-            .address(rs.getString("address"))
-            .build();
+    /**
+     * Retrieves all customer profiles.
+     * 
+     * @return a list of all customer profiles
+     */
+    List<CustomerProfile> findAll();
 
-    public CustomerProfile save(CustomerProfile customerProfile) {
-        // Check if customer already exists by SSN
-        Optional<CustomerProfile> existing = findBySocialSecurityNumber(customerProfile.getSocialSecurityNumber());
-        
-        if (existing.isPresent()) {
-            return update(customerProfile);
-        } else {
-            return insert(customerProfile);
-        }
-    }
-
-    private CustomerProfile insert(CustomerProfile customerProfile) {
-        String sql = "INSERT INTO customer_profile (social_security_number, first_name, last_name, address) VALUES (?, ?, ?, ?)";
-        
-        jdbcTemplate.update(sql,
-            customerProfile.getSocialSecurityNumber(),
-            customerProfile.getFirstName(),
-            customerProfile.getLastName(),
-            customerProfile.getAddress()
-        );
-
-        return customerProfile;
-    }
-
-    private CustomerProfile update(CustomerProfile customerProfile) {
-        String sql = "UPDATE customer_profile SET first_name = ?, last_name = ?, address = ? WHERE social_security_number = ?";
-        
-        jdbcTemplate.update(sql,
-            customerProfile.getFirstName(),
-            customerProfile.getLastName(),
-            customerProfile.getAddress(),
-            customerProfile.getSocialSecurityNumber()
-        );
-        
-        return customerProfile;
-    }
-
-    public Optional<CustomerProfile> findBySocialSecurityNumber(String socialSecurityNumber) {
-        String sql = "SELECT * FROM customer_profile WHERE social_security_number = ?";
-        
-        List<CustomerProfile> results = jdbcTemplate.query(sql, rowMapper, socialSecurityNumber);
-        
-        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
-    }
-
-    public List<CustomerProfile> findAll() {
-        String sql = "SELECT * FROM customer_profile";
-        return jdbcTemplate.query(sql, rowMapper);
-    }
-
-    public void deleteBySocialSecurityNumber(String socialSecurityNumber) {
-        String sql = "DELETE FROM customer_profile WHERE social_security_number = ?";
-        jdbcTemplate.update(sql, socialSecurityNumber);
-    }
+    /**
+     * Deletes a customer profile by social security number.
+     * 
+     * @param socialSecurityNumber the social security number of the profile to delete
+     */
+    void deleteBySocialSecurityNumber(String socialSecurityNumber);
 }
 

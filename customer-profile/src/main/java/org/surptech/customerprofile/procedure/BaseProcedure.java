@@ -1,25 +1,23 @@
 package org.surptech.customerprofile.procedure;
 
+import org.surptech.customerprofile.config.ApplicationContextProvider;
 import org.surptech.customerprofile.service.ApplicationServices;
 import lombok.Getter;
-import org.springframework.stereotype.Service;
 
 @Getter
-@Service
 public abstract class BaseProcedure<RT, RS> {
-    static ApplicationServices applicationServices;
+    protected final ApplicationServices applicationServices;
 
     RT request;
     RS response;
 
-    BaseProcedure() {}
-
-    BaseProcedure(RT request) {
-        this.request = request;
+    protected BaseProcedure() {
+        this.applicationServices = ApplicationContextProvider.getBean(ApplicationServices.class);
     }
 
-    public static synchronized void setApplicationServices(ApplicationServices applicationServicesInstance) {
-        applicationServices = applicationServicesInstance;
+    protected BaseProcedure(RT request) {
+        this.applicationServices = ApplicationContextProvider.getBean(ApplicationServices.class);
+        this.request = request;
     }
 
     public abstract RS executeProcedure();
