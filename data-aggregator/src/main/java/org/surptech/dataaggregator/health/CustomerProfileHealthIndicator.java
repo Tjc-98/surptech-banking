@@ -31,8 +31,8 @@ public class CustomerProfileHealthIndicator {
                 log.warn("Customer-profile service returned unexpected response");
                 return false;
             }
-        } catch (Exception e) {
-            log.error("Customer-profile service is DOWN: {}", e.getMessage());
+        } catch (Exception exception) {
+            log.error("Customer-profile service is DOWN: {}", exception.getMessage());
             return false;
         }
     }

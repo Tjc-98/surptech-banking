@@ -43,27 +43,29 @@ public class GetCustomerCreditInfoProcedure extends BaseProcedure<String, Custom
         }
 
         // Build aggregated entity
-        CustomerCreditInfoEntity.Builder builder = CustomerCreditInfoEntity.builder()
+        var customerCreditInfoEntityBuilder = CustomerCreditInfoEntity.builder()
                 .socialSecurityNumber(request);
 
         // Add customer profile data if available
         if (customerProfile.isPresent()) {
-            CustomerProfileEntity cp = customerProfile.get();
-            builder.firstName(cp.getFirstName())
-                   .lastName(cp.getLastName())
-                   .address(cp.getAddress());
+            CustomerProfileEntity customerProfileEntity = customerProfile.get();
+            customerCreditInfoEntityBuilder = customerCreditInfoEntityBuilder
+                   .firstName(customerProfileEntity.getFirstName())
+                   .lastName(customerProfileEntity.getLastName())
+                   .address(customerProfileEntity.getAddress());
         }
 
         // Add credit profile data if available
         if (creditProfile.isPresent()) {
-            CreditProfileEntity crp = creditProfile.get();
-            builder.currentBalance(crp.getCurrentBalance())
-                   .spendBalance(crp.getSpendBalance())
-                   .interestRate(crp.getInterestRate());
+            CreditProfileEntity creditProfileEntity = creditProfile.get();
+            customerCreditInfoEntityBuilder = customerCreditInfoEntityBuilder
+                   .currentBalance(creditProfileEntity.getCurrentBalance())
+                   .spendBalance(creditProfileEntity.getSpendBalance())
+                   .interestRate(creditProfileEntity.getInterestRate());
         }
 
-        CustomerCreditInfoEntity entity = builder.build();
-        
+        CustomerCreditInfoEntity entity = customerCreditInfoEntityBuilder.build();
+
         // Convert entity to response DTO
         response = CustomerCreditInfoMapper.toResponse(entity);
         

@@ -31,8 +31,8 @@ public class AuthServerHealthIndicator {
                 log.warn("Auth-server service returned unexpected response");
                 return false;
             }
-        } catch (Exception e) {
-            log.warn("Auth-server service is DOWN (not yet implemented): {}", e.getMessage());
+        } catch (Exception exception) {
+            log.warn("Auth-server service is DOWN (not yet implemented): {}", exception.getMessage());
             return false;
         }
     }

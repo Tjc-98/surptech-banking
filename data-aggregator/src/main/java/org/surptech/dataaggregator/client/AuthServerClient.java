@@ -15,7 +15,7 @@ public class AuthServerClient {
         this.authServerRestClient = applicationServices.getAuthServerRestClient();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String authorizationToken) {
         try {
             log.info("Validating token with auth server");
             
@@ -26,8 +26,8 @@ public class AuthServerClient {
             log.warn("Auth server validation not yet implemented - accepting all tokens");
             return true; // Temporary: accept all tokens until auth server is implemented
             
-        } catch (Exception e) {
-            log.error("Error validating token with auth server - Service may not be available yet", e);
+        } catch (Exception exception) {
+            log.error("Error validating token with auth server - Service may not be available yet", exception);
             return true; // Temporary: accept on error until auth server is implemented
         }
     }

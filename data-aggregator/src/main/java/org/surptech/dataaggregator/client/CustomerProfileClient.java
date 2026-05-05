@@ -46,8 +46,8 @@ public class CustomerProfileClient {
             log.warn("Customer profile not found for SSN: {}", socialSecurityNumber);
             return Optional.empty();
             
-        } catch (Exception e) {
-            log.error("Error fetching customer profile for SSN: {}", socialSecurityNumber, e);
+        } catch (Exception exception) {
+            log.error("Error fetching customer profile for SSN: {}", socialSecurityNumber, exception);
             return Optional.empty();
         }
     }

@@ -31,8 +31,8 @@ public class CreditProfileHealthIndicator {
                 log.warn("Credit-profile service returned unexpected response");
                 return false;
             }
-        } catch (Exception e) {
-            log.warn("Credit-profile service is DOWN (not yet implemented): {}", e.getMessage());
+        } catch (Exception exception) {
+            log.warn("Credit-profile service is DOWN (not yet implemented): {}", exception.getMessage());
             return false;
         }
     }

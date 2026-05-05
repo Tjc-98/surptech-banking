@@ -35,34 +35,34 @@ public class HealthController {
         Map<String, ServiceHealthResponse> components = new HashMap<>();
 
         // Check customer-profile
-        boolean customerProfileUp = customerProfileHealthIndicator.isHealthy();
+        boolean isCustomerProfileUp = customerProfileHealthIndicator.isHealthy();
         components.put("customerProfile", ServiceHealthResponse.builder()
                 .status(customerProfileHealthIndicator.getStatus())
                 .service("customer-profile")
                 .url("http://localhost:5551")
-                .available(customerProfileUp)
+                .available(isCustomerProfileUp)
                 .build());
 
         // Check credit-profile
-        boolean creditProfileUp = creditProfileHealthIndicator.isHealthy();
+        boolean isCreditProfileUp = creditProfileHealthIndicator.isHealthy();
         components.put("creditProfile", ServiceHealthResponse.builder()
                 .status(creditProfileHealthIndicator.getStatus())
                 .service("credit-profile")
                 .url("http://localhost:5552")
-                .available(creditProfileUp)
+                .available(isCreditProfileUp)
                 .build());
 
         // Check auth-server
-        boolean authServerUp = authServerHealthIndicator.isHealthy();
+        boolean isAuthServerUp = authServerHealthIndicator.isHealthy();
         components.put("authServer", ServiceHealthResponse.builder()
                 .status(authServerHealthIndicator.getStatus())
                 .service("auth-server")
                 .url("http://localhost:5553")
-                .available(authServerUp)
+                .available(isAuthServerUp)
                 .build());
 
         // Overall status - UP if at least customer-profile is up (critical service)
-        String overallStatus = customerProfileUp ? "UP" : "DOWN";
+        String overallStatus = isCustomerProfileUp ? "UP" : "DOWN";
 
         HealthResponse response = HealthResponse.builder()
                 .status(overallStatus)

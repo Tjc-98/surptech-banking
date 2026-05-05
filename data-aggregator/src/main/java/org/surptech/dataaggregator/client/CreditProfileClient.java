@@ -39,8 +39,8 @@ public class CreditProfileClient {
             log.warn("Credit profile not found for SSN: {}", socialSecurityNumber);
             return Optional.empty();
             
-        } catch (Exception e) {
-            log.error("Error fetching credit profile for SSN: {} - Service may not be available yet", socialSecurityNumber, e);
+        } catch (Exception exception) {
+            log.error("Error fetching credit profile for SSN: {} - Service may not be available yet", socialSecurityNumber, exception);
             return Optional.empty();
         }
     }
