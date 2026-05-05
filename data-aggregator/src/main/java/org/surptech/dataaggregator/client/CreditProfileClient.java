@@ -3,7 +3,9 @@ package org.surptech.dataaggregator.client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.surptech.dataaggregator.domain.CreditProfile;
+import org.surptech.dataaggregator.domain.CreditProfileResponse;
+import org.surptech.dataaggregator.entity.CreditProfileEntity;
+import org.surptech.dataaggregator.mapper.CreditProfileMapper;
 import org.surptech.dataaggregator.service.ApplicationServices;
 
 import java.util.Optional;
@@ -18,18 +20,20 @@ public class CreditProfileClient {
         this.creditProfileRestClient = applicationServices.getCreditProfileRestClient();
     }
 
-    public Optional<CreditProfile> getCreditProfile(String socialSecurityNumber) {
+    public Optional<CreditProfileEntity> getCreditProfile(String socialSecurityNumber) {
         try {
             log.info("Fetching credit profile for SSN: {}", socialSecurityNumber);
             
-            CreditProfile creditProfile = creditProfileRestClient.get()
+            // Call external service and get DTO response
+            CreditProfileResponse response = creditProfileRestClient.get()
                     .uri("/credit/get/{socialSecurityNumber}", socialSecurityNumber)
                     .retrieve()
-                    .body(CreditProfile.class);
+                    .body(CreditProfileResponse.class);
 
-            if (creditProfile != null) {
+            if (response != null) {
                 log.info("Successfully retrieved credit profile for SSN: {}", socialSecurityNumber);
-                return Optional.of(creditProfile);
+                // Convert DTO to internal entity
+                return Optional.of(CreditProfileMapper.toEntity(response));
             }
             
             log.warn("Credit profile not found for SSN: {}", socialSecurityNumber);

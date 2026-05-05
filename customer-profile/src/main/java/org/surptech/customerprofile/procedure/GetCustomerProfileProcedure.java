@@ -1,14 +1,16 @@
 package org.surptech.customerprofile.procedure;
 
 import lombok.extern.slf4j.Slf4j;
-import org.surptech.customerprofile.domain.CustomerProfile;
+import org.surptech.customerprofile.domain.CustomerProfileResponse;
 import org.surptech.customerprofile.domain.EmptyRequest;
+import org.surptech.customerprofile.entity.CustomerProfileEntity;
+import org.surptech.customerprofile.mapper.CustomerProfileMapper;
 import org.surptech.customerprofile.repository.CustomerProfileRepository;
 
 import java.util.Optional;
 
 @Slf4j
-public class GetCustomerProfileProcedure extends BaseProcedure<EmptyRequest, CustomerProfile> {
+public class GetCustomerProfileProcedure extends BaseProcedure<EmptyRequest, CustomerProfileResponse> {
 
     private final String socialSecurityNumber;
     private final CustomerProfileRepository customerProfileRepository;
@@ -20,11 +22,12 @@ public class GetCustomerProfileProcedure extends BaseProcedure<EmptyRequest, Cus
     }
 
     @Override
-    public CustomerProfile executeProcedure() {
-        Optional<CustomerProfile> customerProfile = customerProfileRepository.findBySocialSecurityNumber(socialSecurityNumber);
+    public CustomerProfileResponse executeProcedure() {
+        Optional<CustomerProfileEntity> customerProfileEntity = 
+                customerProfileRepository.findBySocialSecurityNumber(socialSecurityNumber);
 
-        if (customerProfile.isPresent()) {
-            response = customerProfile.get();
+        if (customerProfileEntity.isPresent()) {
+            response = CustomerProfileMapper.toResponse(customerProfileEntity.get());
             log.info("Found customer profile for SSN: {}", socialSecurityNumber);
         } else {
             log.info("No customer profile found for SSN: {}", socialSecurityNumber);

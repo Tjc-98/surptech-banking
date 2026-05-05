@@ -4,14 +4,13 @@ import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.surptech.customerprofile.domain.CustomerProfile;
+import org.surptech.customerprofile.domain.CustomerProfileResponse;
 import org.surptech.customerprofile.domain.CustomerProfileRequest;
+import org.surptech.customerprofile.domain.GetCustomerProfileRequest;
 import org.surptech.customerprofile.procedure.CreateCustomerProfileProcedure;
 import org.surptech.customerprofile.procedure.GetCustomerProfileProcedure;
 
@@ -20,11 +19,12 @@ import org.surptech.customerprofile.procedure.GetCustomerProfileProcedure;
 public class CustomerProfileController extends BaseController {
 
     @ManagedOperation(description = "Retrieve customer profile by social security number")
-    @GetMapping(value = "/get/{socialSecurityNumber}", produces = "application/json")
-    public ResponseEntity<CustomerProfile> getCustomerProfile(
-            @NonNull @PathVariable String socialSecurityNumber) {
+    @PostMapping(value = "/get", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<CustomerProfileResponse> getCustomerProfile(
+            @NonNull @RequestBody GetCustomerProfileRequest request) {
 
-        CustomerProfile customerProfile = runProcedure(new GetCustomerProfileProcedure(socialSecurityNumber));
+        CustomerProfileResponse customerProfile = runProcedure(
+                new GetCustomerProfileProcedure(request.getSocialSecurityNumber()));
 
         if (customerProfile != null) {
             return ResponseEntity.ok(customerProfile);
@@ -35,10 +35,10 @@ public class CustomerProfileController extends BaseController {
 
     @ManagedOperation(description = "Create a new customer profile")
     @PostMapping(value = "/create", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<CustomerProfile> createCustomerProfile(
+    public ResponseEntity<CustomerProfileResponse> createCustomerProfile(
             @NonNull @RequestBody CustomerProfileRequest customerProfileRequest) {
 
-        CustomerProfile customerProfile = runProcedure(new CreateCustomerProfileProcedure(customerProfileRequest));
+        CustomerProfileResponse customerProfile = runProcedure(new CreateCustomerProfileProcedure(customerProfileRequest));
 
         if (customerProfile != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(customerProfile);

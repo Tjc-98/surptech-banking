@@ -1,6 +1,6 @@
 package org.surptech.customerprofile.repository;
 
-import org.surptech.customerprofile.domain.CustomerProfile;
+import org.surptech.customerprofile.entity.CustomerProfileEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,25 +14,25 @@ public interface CustomerProfileRepository {
     /**
      * Saves a customer profile. If the profile already exists, it will be updated.
      * 
-     * @param customerProfile the customer profile to save
-     * @return the saved customer profile
+     * @param customerProfile the customer profile entity to save
+     * @return the saved customer profile entity
      */
-    CustomerProfile save(CustomerProfile customerProfile);
+    CustomerProfileEntity save(CustomerProfileEntity customerProfile);
 
     /**
      * Finds a customer profile by social security number.
      * 
      * @param socialSecurityNumber the social security number to search for
-     * @return an Optional containing the customer profile if found, empty otherwise
+     * @return an Optional containing the customer profile entity if found, empty otherwise
      */
-    Optional<CustomerProfile> findBySocialSecurityNumber(String socialSecurityNumber);
+    Optional<CustomerProfileEntity> findBySocialSecurityNumber(String socialSecurityNumber);
 
     /**
      * Retrieves all customer profiles.
      * 
-     * @return a list of all customer profiles
+     * @return a list of all customer profile entities
      */
-    List<CustomerProfile> findAll();
+    List<CustomerProfileEntity> findAll();
 
     /**
      * Deletes a customer profile by social security number.

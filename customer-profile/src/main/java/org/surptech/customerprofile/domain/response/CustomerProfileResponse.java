@@ -1,4 +1,4 @@
-package org.surptech.dataaggregator.domain;
+package org.surptech.customerprofile.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,16 +13,13 @@ import lombok.NoArgsConstructor;
         "social_security_number",
         "first_name",
         "last_name",
-        "address",
-        "current_balance",
-        "spend_balance",
-        "interest_rate"
+        "address"
 })
 @Builder(builderClassName = "Builder", toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomerCreditInfo {
+public class CustomerProfileResponse {
 
     @JsonProperty("social_security_number")
     private String socialSecurityNumber;
@@ -36,12 +33,4 @@ public class CustomerCreditInfo {
     @JsonProperty("address")
     private String address;
 
-    @JsonProperty("current_balance")
-    private Double currentBalance;
-
-    @JsonProperty("spend_balance")
-    private Double spendBalance;
-
-    @JsonProperty("interest_rate")
-    private Double interestRate;
 }

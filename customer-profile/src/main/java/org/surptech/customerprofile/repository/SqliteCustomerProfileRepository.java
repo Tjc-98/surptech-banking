@@ -3,7 +3,7 @@ package org.surptech.customerprofile.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.surptech.customerprofile.domain.CustomerProfile;
+import org.surptech.customerprofile.entity.CustomerProfileEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +22,8 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
         log.info("SqliteCustomerProfileRepository initialized");
     }
 
-    private final RowMapper<CustomerProfile> rowMapper = (resultSet, rowNumber) -> 
-        CustomerProfile.builder()
+    private final RowMapper<CustomerProfileEntity> rowMapper = (resultSet, rowNumber) -> 
+        CustomerProfileEntity.builder()
             .socialSecurityNumber(resultSet.getString("social_security_number"))
             .firstName(resultSet.getString("first_name"))
             .lastName(resultSet.getString("last_name"))
@@ -31,11 +31,11 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
             .build();
 
     @Override
-    public CustomerProfile save(CustomerProfile customerProfile) {
+    public CustomerProfileEntity save(CustomerProfileEntity customerProfile) {
         log.debug("Saving customer profile with SSN: {}", customerProfile.getSocialSecurityNumber());
         
         // Check if customer already exists by SSN
-        Optional<CustomerProfile> existing = findBySocialSecurityNumber(customerProfile.getSocialSecurityNumber());
+        Optional<CustomerProfileEntity> existing = findBySocialSecurityNumber(customerProfile.getSocialSecurityNumber());
         
         if (existing.isPresent()) {
             log.debug("Customer profile exists, updating");
@@ -46,7 +46,7 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
         }
     }
 
-    private CustomerProfile insert(CustomerProfile customerProfile) {
+    private CustomerProfileEntity insert(CustomerProfileEntity customerProfile) {
         log.info("Inserting new customer profile: {}", customerProfile.getSocialSecurityNumber());
         String sqlQuery = "INSERT INTO customer_profile (social_security_number, first_name, last_name, address) VALUES (?, ?, ?, ?)";
         
@@ -61,7 +61,7 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
         return customerProfile;
     }
 
-    private CustomerProfile update(CustomerProfile customerProfile) {
+    private CustomerProfileEntity update(CustomerProfileEntity customerProfile) {
         log.info("Updating customer profile: {}", customerProfile.getSocialSecurityNumber());
         String sqlQuery = "UPDATE customer_profile SET first_name = ?, last_name = ?, address = ? WHERE social_security_number = ?";
         
@@ -77,11 +77,11 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
     }
 
     @Override
-    public Optional<CustomerProfile> findBySocialSecurityNumber(String socialSecurityNumber) {
+    public Optional<CustomerProfileEntity> findBySocialSecurityNumber(String socialSecurityNumber) {
         log.debug("Finding customer profile by SSN: {}", socialSecurityNumber);
         String sqlQuery = "SELECT * FROM customer_profile WHERE social_security_number = ?";
         
-        List<CustomerProfile> results = jdbcTemplate.query(sqlQuery, rowMapper, socialSecurityNumber);
+        List<CustomerProfileEntity> results = jdbcTemplate.query(sqlQuery, rowMapper, socialSecurityNumber);
         
         if (results.isEmpty()) {
             log.debug("Customer profile not found for SSN: {}", socialSecurityNumber);
@@ -93,10 +93,10 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
     }
 
     @Override
-    public List<CustomerProfile> findAll() {
+    public List<CustomerProfileEntity> findAll() {
         log.info("Retrieving all customer profiles");
         String sqlQuery = "SELECT * FROM customer_profile";
-        List<CustomerProfile> profiles = jdbcTemplate.query(sqlQuery, rowMapper);
+        List<CustomerProfileEntity> profiles = jdbcTemplate.query(sqlQuery, rowMapper);
         log.info("Retrieved {} customer profiles", profiles.size());
         return profiles;
     }

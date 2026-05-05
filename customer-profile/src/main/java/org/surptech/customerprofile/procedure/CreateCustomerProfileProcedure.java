@@ -1,12 +1,14 @@
 package org.surptech.customerprofile.procedure;
 
 import lombok.extern.slf4j.Slf4j;
-import org.surptech.customerprofile.domain.CustomerProfile;
+import org.surptech.customerprofile.domain.CustomerProfileResponse;
 import org.surptech.customerprofile.domain.CustomerProfileRequest;
+import org.surptech.customerprofile.entity.CustomerProfileEntity;
+import org.surptech.customerprofile.mapper.CustomerProfileMapper;
 import org.surptech.customerprofile.repository.CustomerProfileRepository;
 
 @Slf4j
-public class CreateCustomerProfileProcedure extends BaseProcedure<CustomerProfileRequest, CustomerProfile> {
+public class CreateCustomerProfileProcedure extends BaseProcedure<CustomerProfileRequest, CustomerProfileResponse> {
 
     private final CustomerProfileRepository customerProfileRepository;
 
@@ -16,15 +18,16 @@ public class CreateCustomerProfileProcedure extends BaseProcedure<CustomerProfil
     }
 
     @Override
-    public CustomerProfile executeProcedure() {
-        CustomerProfile customerProfile = CustomerProfile.builder()
-                .socialSecurityNumber(request.getSocialSecurityNumber())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .address(request.getAddress())
-                .build();
+    public CustomerProfileResponse executeProcedure() {
+        // Convert request DTO to entity
+        CustomerProfileEntity entity = CustomerProfileMapper.toEntity(request);
 
-        response = customerProfileRepository.save(customerProfile);
+        // Save entity
+        CustomerProfileEntity savedEntity = customerProfileRepository.save(entity);
+        
+        // Convert entity back to response DTO
+        response = CustomerProfileMapper.toResponse(savedEntity);
+        
         log.info("Created customer profile for SSN: {}", response.getSocialSecurityNumber());
 
         return response;

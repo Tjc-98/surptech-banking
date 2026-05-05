@@ -27,13 +27,21 @@ GET /data-aggregator/management/health
 
 Standard Spring Boot Actuator health endpoint.
 
-### Get Customer Credit Information
+### Get Customer Banking Information
 ```
-GET /data-aggregator/aggregate/customer-credit/{socialSecurityNumber}
+POST /data-aggregator/customer/info
 ```
 
 **Headers:**
+- `Content-Type: application/json`
 - `Authorization` (optional): Bearer token for authentication
+
+**Request Body:**
+```json
+{
+  "social_security_number": "123-45-6789"
+}
+```
 
 ## Building and Running
 

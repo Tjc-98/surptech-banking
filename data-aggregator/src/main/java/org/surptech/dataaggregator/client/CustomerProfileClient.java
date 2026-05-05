@@ -3,9 +3,13 @@ package org.surptech.dataaggregator.client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.surptech.dataaggregator.domain.CustomerProfile;
+import org.surptech.dataaggregator.domain.CustomerProfileResponse;
+import org.surptech.dataaggregator.entity.CustomerProfileEntity;
+import org.surptech.dataaggregator.mapper.CustomerProfileMapper;
 import org.surptech.dataaggregator.service.ApplicationServices;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -18,18 +22,25 @@ public class CustomerProfileClient {
         this.customerProfileRestClient = applicationServices.getCustomerProfileRestClient();
     }
 
-    public Optional<CustomerProfile> getCustomerProfile(String socialSecurityNumber) {
+    public Optional<CustomerProfileEntity> getCustomerProfile(String socialSecurityNumber) {
         try {
             log.info("Fetching customer profile for SSN: {}", socialSecurityNumber);
             
-            CustomerProfile customerProfile = customerProfileRestClient.get()
-                    .uri("/customer/get/{socialSecurityNumber}", socialSecurityNumber)
+            // Create request body
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("social_security_number", socialSecurityNumber);
+            
+            // Call external service and get DTO response
+            CustomerProfileResponse response = customerProfileRestClient.post()
+                    .uri("/customer-profile/customer/get")
+                    .body(requestBody)
                     .retrieve()
-                    .body(CustomerProfile.class);
+                    .body(CustomerProfileResponse.class);
 
-            if (customerProfile != null) {
+            if (response != null) {
                 log.info("Successfully retrieved customer profile for SSN: {}", socialSecurityNumber);
-                return Optional.of(customerProfile);
+                // Convert DTO to internal entity
+                return Optional.of(CustomerProfileMapper.toEntity(response));
             }
             
             log.warn("Customer profile not found for SSN: {}", socialSecurityNumber);
