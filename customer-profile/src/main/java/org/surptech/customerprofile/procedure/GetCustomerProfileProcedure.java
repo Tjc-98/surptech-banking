@@ -25,9 +25,9 @@ public class GetCustomerProfileProcedure extends BaseProcedure<String, CustomerP
 
         if (customerProfileEntity.isPresent()) {
             response = CustomerProfileMapper.toResponse(customerProfileEntity.get());
-            log.info("Found customer profile for SSN: {}", request);
+            log.info("Found customer profile for SocialSecurityNumber: {}", request);
         } else {
-            log.info("No customer profile found for SSN: {}", request);
+            log.info("No customer profile found for SocialSecurityNumber: {}", request);
         }
 
         return response;

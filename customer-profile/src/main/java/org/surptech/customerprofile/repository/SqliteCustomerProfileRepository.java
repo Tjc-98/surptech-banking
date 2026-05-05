@@ -32,9 +32,9 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
 
     @Override
     public CustomerProfileEntity save(CustomerProfileEntity customerProfile) {
-        log.debug("Saving customer profile with SSN: {}", customerProfile.getSocialSecurityNumber());
-        
-        // Check if customer already exists by SSN
+        log.debug("Saving customer profile with SocialSecurityNumber: {}", customerProfile.getSocialSecurityNumber());
+
+        // Check if customer already exists by SocialSecurityNumber
         Optional<CustomerProfileEntity> existing = findBySocialSecurityNumber(customerProfile.getSocialSecurityNumber());
         
         if (existing.isPresent()) {
@@ -78,15 +78,15 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
 
     @Override
     public Optional<CustomerProfileEntity> findBySocialSecurityNumber(String socialSecurityNumber) {
-        log.debug("Finding customer profile by SSN: {}", socialSecurityNumber);
+        log.debug("Finding customer profile by SocialSecurityNumber: {}", socialSecurityNumber);
         String sqlQuery = "SELECT * FROM customer_profile WHERE social_security_number = ?";
         
         List<CustomerProfileEntity> results = jdbcTemplate.query(sqlQuery, rowMapper, socialSecurityNumber);
         
         if (results.isEmpty()) {
-            log.debug("Customer profile not found for SSN: {}", socialSecurityNumber);
+            log.debug("Customer profile not found for SocialSecurityNumber: {}", socialSecurityNumber);
         } else {
-            log.debug("Customer profile found for SSN: {}", socialSecurityNumber);
+            log.debug("Customer profile found for SocialSecurityNumber: {}", socialSecurityNumber);
         }
         
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -103,7 +103,7 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
 
     @Override
     public void deleteBySocialSecurityNumber(String socialSecurityNumber) {
-        log.info("Deleting customer profile with SSN: {}", socialSecurityNumber);
+        log.info("Deleting customer profile with SocialSecurityNumber: {}", socialSecurityNumber);
         String sqlQuery = "DELETE FROM customer_profile WHERE social_security_number = ?";
         int rowsAffected = jdbcTemplate.update(sqlQuery, socialSecurityNumber);
         log.info("Deleted {} customer profile(s)", rowsAffected);
