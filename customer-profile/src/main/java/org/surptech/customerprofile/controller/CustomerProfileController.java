@@ -3,7 +3,6 @@ package org.surptech.customerprofile.controller;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +17,6 @@ import org.surptech.customerprofile.procedure.GetCustomerProfileProcedure;
 @RequestMapping("/customer")
 public class CustomerProfileController extends BaseController {
 
-    @ManagedOperation(description = "Retrieve customer profile by social security number")
     @PostMapping(value = "/get", consumes = "application/json", produces = "application/json")
     public ResponseEntity<CustomerProfileResponse> getCustomerProfile(
             @NonNull @RequestBody GetCustomerProfileRequest request) {
@@ -33,7 +31,6 @@ public class CustomerProfileController extends BaseController {
         return ResponseEntity.notFound().build();
     }
 
-    @ManagedOperation(description = "Create a new customer profile")
     @PostMapping(value = "/create", consumes = "application/json", produces = "application/json")
     public ResponseEntity<CustomerProfileResponse> createCustomerProfile(
             @NonNull @RequestBody CustomerProfileRequest customerProfileRequest) {

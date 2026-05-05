@@ -40,18 +40,4 @@ public class CustomerProfileMapper {
                 .address(entity.getAddress())
                 .build();
     }
-
-    /**
-     * Update entity from request DTO
-     */
-    public static void updateEntityFromRequest(CustomerProfileEntity entity, CustomerProfileRequest request) {
-        if (entity == null || request == null) {
-            return;
-        }
-        
-        entity.setSocialSecurityNumber(request.getSocialSecurityNumber());
-        entity.setFirstName(request.getFirstName());
-        entity.setLastName(request.getLastName());
-        entity.setAddress(request.getAddress());
-    }
 }

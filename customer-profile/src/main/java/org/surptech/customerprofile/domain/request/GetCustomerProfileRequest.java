@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder(builderClassName = "Builder", toBuilder = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetCustomerProfileRequest {
