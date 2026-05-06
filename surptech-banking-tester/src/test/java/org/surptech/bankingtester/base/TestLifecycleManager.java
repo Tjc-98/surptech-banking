@@ -1,9 +1,11 @@
 package org.surptech.bankingtester.base;
 
+import io.qameta.allure.Allure;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
+import org.surptech.bankingtester.listener.AllureLogAppender;
 
 /**
  * Manages test lifecycle events including logging, setup, and teardown.
@@ -19,6 +21,9 @@ public abstract class TestLifecycleManager {
     public void testSetup(TestInfo testInfo) {
         // Reset step counter for each test
         stepCounter.set(0);
+        
+        // Clear logs for new test
+        AllureLogAppender.clearTestLogs();
         
         String testId = testInfo.getTestMethod()
                 .map(method -> method.getAnnotation(org.surptech.bankingtester.annotation.TestId.class))
@@ -49,8 +54,15 @@ public abstract class TestLifecycleManager {
         log.info("-".repeat(80));
         log.info("");
         
+        // Attach test logs to Allure
+        String testLogs = AllureLogAppender.getTestLogs();
+        if (testLogs != null && !testLogs.isEmpty()) {
+            Allure.addAttachment("Test Execution Logs", "text/plain", testLogs, ".log");
+        }
+        
         // Clean up thread-local
         stepCounter.remove();
+        AllureLogAppender.cleanup();
     }
     
     /**
