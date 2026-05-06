@@ -25,42 +25,38 @@ public class CustomerBankingInfoTest extends BaseTest {
     @DisplayName("TC-001: Verify successful retrieval of customer banking information with valid SSN")
     public void testGetCustomerBankingInfo_ValidSSN_Success() {
         // Arrange
+        logStep("Arrange - Prepare test data with valid SSN");
         String ssn = config.getValidSsn();
-        log.info("=".repeat(80));
-        log.info("TEST: TC-001 - Get Customer Banking Info with Valid SSN");
-        log.info("=".repeat(80));
-        log.info("Testing with valid SSN: {}", ssn);
+        log.info("  Using SSN: {}", ssn);
         
         // Act
-        log.info("Sending POST request to /customer/info");
-        log.info("Request Body: {{\"social_security_number\": \"{}\"}}", ssn);
+        logStep("Act - Send POST request to /customer/info");
+        log.info("  Request Body: {{\"social_security_number\": \"{}\"}}", ssn);
         Response response = dataAggregatorClient.getCustomerBankingInfo(ssn);
         
         // Log response details
-        log.info("-".repeat(80));
-        log.info("Response received:");
+        logStep("Verify - Log response details");
         log.info("  Status Code: {}", response.getStatusCode());
         log.info("  Status Line: {}", response.getStatusLine());
         log.info("  Content-Type: {}", response.getContentType());
         log.info("  Response Time: {} ms", response.getTime());
         log.info("  Response Body: {}", response.getBody().asString());
-        log.info("-".repeat(80));
         
         // Assert
-        log.info("Validating response status code");
+        logStep("Assert - Validate response status code is 200");
         assertEquals(200, response.getStatusCode(), 
                 "Expected HTTP 200 OK for valid SSN");
         
-        log.info("Parsing response body");
+        logStep("Assert - Parse response body and verify not null");
         CustomerBankingInfo bankingInfo = response.as(CustomerBankingInfo.class);
         assertNotNull(bankingInfo, "Banking info should not be null");
         
         // Validate Customer Info
-        log.info("Validating customer profile data");
-        log.info("  Expected SSN: {}, Actual: {}", config.getExpectedSsn(), bankingInfo.getSocialSecurityNumber());
-        log.info("  Expected First Name: {}, Actual: {}", config.getExpectedFirstName(), bankingInfo.getFirstName());
-        log.info("  Expected Last Name: {}, Actual: {}", config.getExpectedLastName(), bankingInfo.getLastName());
-        log.info("  Expected Address: {}, Actual: {}", config.getExpectedAddress(), bankingInfo.getAddress());
+        logStep("Assert - Validate customer profile data",
+                "Expected SSN: " + config.getExpectedSsn() + ", Actual: " + bankingInfo.getSocialSecurityNumber(),
+                "Expected First Name: " + config.getExpectedFirstName() + ", Actual: " + bankingInfo.getFirstName(),
+                "Expected Last Name: " + config.getExpectedLastName() + ", Actual: " + bankingInfo.getLastName(),
+                "Expected Address: " + config.getExpectedAddress() + ", Actual: " + bankingInfo.getAddress());
         
         assertEquals(config.getExpectedSsn(), bankingInfo.getSocialSecurityNumber(),
                 "SSN should match expected value");
@@ -72,10 +68,10 @@ public class CustomerBankingInfoTest extends BaseTest {
                 "Address should match expected value");
         
         // Validate Credit Info exists
-        log.info("Validating credit profile data");
-        log.info("  Current Balance: {}", bankingInfo.getCurrentBalance());
-        log.info("  Spend Balance: {}", bankingInfo.getSpendBalance());
-        log.info("  Interest Rate: {}", bankingInfo.getInterestRate());
+        logStep("Assert - Validate credit profile data",
+                "Current Balance: " + bankingInfo.getCurrentBalance(),
+                "Spend Balance: " + bankingInfo.getSpendBalance(),
+                "Interest Rate: " + bankingInfo.getInterestRate());
         
         assertNotNull(bankingInfo.getCurrentBalance(), 
                 "Current balance should not be null");
@@ -84,9 +80,7 @@ public class CustomerBankingInfoTest extends BaseTest {
         assertNotNull(bankingInfo.getInterestRate(), 
                 "Interest rate should not be null");
         
-        log.info("=".repeat(80));
-        log.info("✓ Test passed: Customer banking information retrieved successfully");
-        log.info("=".repeat(80));
+        logStep("Test completed successfully");
     }
     
     @Test
@@ -95,31 +89,30 @@ public class CustomerBankingInfoTest extends BaseTest {
     @DisplayName("TC-002: Verify customer profile data structure and completeness")
     public void testGetCustomerBankingInfo_ValidateCustomerProfileStructure() {
         // Arrange
+        logStep("Arrange - Prepare test data with valid SSN");
         String ssn = config.getValidSsn();
-        log.info("=".repeat(80));
-        log.info("TEST: TC-002 - Validate Customer Profile Structure");
-        log.info("=".repeat(80));
-        log.info("Testing with SSN: {}", ssn);
+        log.info("  Using SSN: {}", ssn);
         
         // Act
-        log.info("Sending POST request to /customer/info");
+        logStep("Act - Send POST request to /customer/info");
         Response response = dataAggregatorClient.getCustomerBankingInfo(ssn);
         
-        log.info("-".repeat(80));
-        log.info("Response Status: {}", response.getStatusCode());
-        log.info("Response Body: {}", response.getBody().asString());
-        log.info("-".repeat(80));
+        logStep("Verify - Log response details");
+        log.info("  Response Status: {}", response.getStatusCode());
+        log.info("  Response Body: {}", response.getBody().asString());
         
         // Assert
+        logStep("Assert - Validate response status code is 200");
         assertEquals(200, response.getStatusCode());
         
+        logStep("Assert - Parse response body");
         CustomerBankingInfo bankingInfo = response.as(CustomerBankingInfo.class);
         
-        log.info("Validating customer profile structure");
-        log.info("  SSN: {}", bankingInfo.getSocialSecurityNumber());
-        log.info("  First Name: {}", bankingInfo.getFirstName());
-        log.info("  Last Name: {}", bankingInfo.getLastName());
-        log.info("  Address: {}", bankingInfo.getAddress());
+        logStep("Assert - Validate customer profile structure",
+                "SSN: " + bankingInfo.getSocialSecurityNumber(),
+                "First Name: " + bankingInfo.getFirstName(),
+                "Last Name: " + bankingInfo.getLastName(),
+                "Address: " + bankingInfo.getAddress());
         
         assertAll("Customer Profile Structure",
                 () -> assertNotNull(bankingInfo.getSocialSecurityNumber(), 
@@ -136,9 +129,7 @@ public class CustomerBankingInfoTest extends BaseTest {
                         "Last name should not be empty")
         );
         
-        log.info("=".repeat(80));
-        log.info("✓ Test passed: Customer profile structure is valid");
-        log.info("=".repeat(80));
+        logStep("Test completed successfully");
     }
     
     @Test
@@ -147,31 +138,30 @@ public class CustomerBankingInfoTest extends BaseTest {
     @DisplayName("TC-003: Verify credit profile data structure and completeness")
     public void testGetCustomerBankingInfo_ValidateCreditProfileStructure() {
         // Arrange
+        logStep("Arrange - Prepare test data with valid SSN");
         String ssn = config.getValidSsn();
-        log.info("=".repeat(80));
-        log.info("TEST: TC-003 - Validate Credit Profile Structure");
-        log.info("=".repeat(80));
-        log.info("Testing with SSN: {}", ssn);
+        log.info("  Using SSN: {}", ssn);
         
         // Act
-        log.info("Sending POST request to /customer/info");
+        logStep("Act - Send POST request to /customer/info");
         Response response = dataAggregatorClient.getCustomerBankingInfo(ssn);
         
-        log.info("-".repeat(80));
-        log.info("Response Status: {}", response.getStatusCode());
-        log.info("Response Body: {}", response.getBody().asString());
-        log.info("-".repeat(80));
+        logStep("Verify - Log response details");
+        log.info("  Response Status: {}", response.getStatusCode());
+        log.info("  Response Body: {}", response.getBody().asString());
         
         // Assert
+        logStep("Assert - Validate response status code is 200");
         assertEquals(200, response.getStatusCode());
         
+        logStep("Assert - Parse response body");
         CustomerBankingInfo bankingInfo = response.as(CustomerBankingInfo.class);
         
-        log.info("Validating credit profile structure");
-        log.info("  SSN: {}", bankingInfo.getSocialSecurityNumber());
-        log.info("  Current Balance: {}", bankingInfo.getCurrentBalance());
-        log.info("  Spend Balance: {}", bankingInfo.getSpendBalance());
-        log.info("  Interest Rate: {}", bankingInfo.getInterestRate());
+        logStep("Assert - Validate credit profile structure",
+                "SSN: " + bankingInfo.getSocialSecurityNumber(),
+                "Current Balance: " + bankingInfo.getCurrentBalance(),
+                "Spend Balance: " + bankingInfo.getSpendBalance(),
+                "Interest Rate: " + bankingInfo.getInterestRate());
         
         assertAll("Credit Profile Structure",
                 () -> assertNotNull(bankingInfo.getSocialSecurityNumber(), 
@@ -184,9 +174,7 @@ public class CustomerBankingInfoTest extends BaseTest {
                         "Interest rate should not be null")
         );
         
-        log.info("=".repeat(80));
-        log.info("✓ Test passed: Credit profile structure is valid");
-        log.info("=".repeat(80));
+        logStep("Test completed successfully");
     }
     
     @Test
@@ -195,37 +183,34 @@ public class CustomerBankingInfoTest extends BaseTest {
     @DisplayName("TC-004: Verify response time is within acceptable limits")
     public void testGetCustomerBankingInfo_ResponseTime() {
         // Arrange
+        logStep("Arrange - Prepare test data and set response time limit");
         String ssn = config.getValidSsn();
         long maxResponseTimeMs = 5000; // 5 seconds
-        
-        log.info("=".repeat(80));
-        log.info("TEST: TC-004 - Validate Response Time");
-        log.info("=".repeat(80));
-        log.info("Testing with SSN: {}", ssn);
-        log.info("Maximum acceptable response time: {} ms", maxResponseTimeMs);
+        log.info("  Using SSN: {}", ssn);
+        log.info("  Maximum acceptable response time: {} ms", maxResponseTimeMs);
         
         // Act
-        log.info("Sending POST request to /customer/info");
+        logStep("Act - Send POST request to /customer/info and measure response time");
         long startTime = System.currentTimeMillis();
         Response response = dataAggregatorClient.getCustomerBankingInfo(ssn);
         long endTime = System.currentTimeMillis();
         long responseTime = endTime - startTime;
         
         // Assert
-        log.info("-".repeat(80));
-        log.info("Response Status: {}", response.getStatusCode());
-        log.info("Response Time: {} ms", responseTime);
-        log.info("Response Time from REST Assured: {} ms", response.getTime());
-        log.info("Max Allowed Time: {} ms", maxResponseTimeMs);
-        log.info("-".repeat(80));
+        logStep("Verify - Log response details",
+                "Response Status: " + response.getStatusCode(),
+                "Response Time (measured): " + responseTime + " ms",
+                "Response Time (REST Assured): " + response.getTime() + " ms",
+                "Max Allowed Time: " + maxResponseTimeMs + " ms");
         
+        logStep("Assert - Validate response status code is 200");
         assertEquals(200, response.getStatusCode());
+        
+        logStep("Assert - Validate response time is within acceptable limits");
         assertTrue(responseTime < maxResponseTimeMs, 
                 String.format("Response time (%d ms) should be less than %d ms", 
                         responseTime, maxResponseTimeMs));
         
-        log.info("=".repeat(80));
-        log.info("✓ Test passed: Response time is acceptable ({} ms < {} ms)", responseTime, maxResponseTimeMs);
-        log.info("=".repeat(80));
+        logStep("Test completed successfully - Response time: {} ms", responseTime);
     }
 }

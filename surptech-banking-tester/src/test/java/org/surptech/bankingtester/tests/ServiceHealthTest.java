@@ -24,27 +24,20 @@ public class ServiceHealthTest extends BaseTest {
     @DisplayName("TC-201: Verify Data Aggregator service is healthy and accessible")
     public void testDataAggregatorHealth() {
         // Act
-        log.info("=".repeat(80));
-        log.info("TEST: TC-201 - Data Aggregator Health Check");
-        log.info("=".repeat(80));
-        log.info("Checking Data Aggregator health");
-        log.info("Sending GET request to /management/health");
-        
+        logStep("Act - Send GET request to /management/health");
         Response response = dataAggregatorClient.healthCheck();
         
         // Assert
-        log.info("-".repeat(80));
-        log.info("Response Status Code: {}", response.getStatusCode());
-        log.info("Response Status Line: {}", response.getStatusLine());
-        log.info("Response Time: {} ms", response.getTime());
-        log.info("Response Body: {}", response.getBody().asString());
-        log.info("-".repeat(80));
+        logStep("Verify - Log response details",
+                "Response Status Code: " + response.getStatusCode(),
+                "Response Status Line: " + response.getStatusLine(),
+                "Response Time: " + response.getTime() + " ms",
+                "Response Body: " + response.getBody().asString());
         
+        logStep("Assert - Validate service health status code is 200");
         assertEquals(200, response.getStatusCode(), 
                 "Data Aggregator service should be healthy");
         
-        log.info("=".repeat(80));
-        log.info("✓ Test passed: Data Aggregator is healthy");
-        log.info("=".repeat(80));
+        logStep("Test completed successfully - Data Aggregator is healthy");
     }
 }
