@@ -8,8 +8,6 @@ import org.surptech.dataaggregator.domain.entity.CustomerProfileEntity;
 import org.surptech.dataaggregator.mapper.CustomerProfileMapper;
 import org.surptech.dataaggregator.service.ApplicationServices;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -26,14 +24,12 @@ public class CustomerProfileClient {
         try {
             log.info("Fetching customer profile for SSN: {}", socialSecurityNumber);
             
-            // Create request body
-            Map<String, String> requestBody = new HashMap<>();
-            requestBody.put("social_security_number", socialSecurityNumber);
-            
-            // Call external service and get DTO response
-            CustomerProfileResponse response = customerProfileRestClient.post()
-                    .uri("/customer-profile/customer/get")
-                    .body(requestBody)
+            // Call external service with GET and query parameter
+            CustomerProfileResponse response = customerProfileRestClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/customer-profile/customer/get")
+                            .queryParam("socialSecurityNumber", socialSecurityNumber)
+                            .build())
                     .retrieve()
                     .body(CustomerProfileResponse.class);
 

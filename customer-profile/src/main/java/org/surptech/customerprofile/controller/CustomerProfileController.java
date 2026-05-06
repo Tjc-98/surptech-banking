@@ -3,13 +3,9 @@ package org.surptech.customerprofile.controller;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.surptech.customerprofile.domain.response.CustomerProfileResponse;
 import org.surptech.customerprofile.domain.request.CustomerProfileRequest;
-import org.surptech.customerprofile.domain.request.GetCustomerProfileRequest;
 import org.surptech.customerprofile.procedure.CreateCustomerProfileProcedure;
 import org.surptech.customerprofile.procedure.GetCustomerProfileProcedure;
 
@@ -17,12 +13,12 @@ import org.surptech.customerprofile.procedure.GetCustomerProfileProcedure;
 @RequestMapping("/customer")
 public class CustomerProfileController extends BaseController {
 
-    @PostMapping(value = "/get", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/get", produces = "application/json")
     public ResponseEntity<CustomerProfileResponse> getCustomerProfile(
-            @NonNull @RequestBody GetCustomerProfileRequest request) {
+            @NonNull @RequestParam("socialSecurityNumber") String socialSecurityNumber) {
 
         CustomerProfileResponse customerProfile = runProcedure(
-                new GetCustomerProfileProcedure(request.getSocialSecurityNumber()));
+                new GetCustomerProfileProcedure(socialSecurityNumber));
 
         if (customerProfile != null) {
             return ResponseEntity.ok(customerProfile);

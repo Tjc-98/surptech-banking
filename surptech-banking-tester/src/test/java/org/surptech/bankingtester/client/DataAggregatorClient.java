@@ -1,13 +1,9 @@
 package org.surptech.bankingtester.client;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.surptech.bankingtester.config.TestConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
@@ -35,14 +31,10 @@ public class DataAggregatorClient {
     public Response getCustomerBankingInfo(String socialSecurityNumber) {
         log.info("Requesting customer banking info for SSN: {}", socialSecurityNumber);
         
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("social_security_number", socialSecurityNumber);
-        
         return given()
-                .contentType(ContentType.JSON)
-                .body(requestBody)
+                .queryParam("socialSecurityNumber", socialSecurityNumber)
             .when()
-                .post("/customer/info")
+                .get("/customer/info")
             .then()
                 .extract()
                 .response();

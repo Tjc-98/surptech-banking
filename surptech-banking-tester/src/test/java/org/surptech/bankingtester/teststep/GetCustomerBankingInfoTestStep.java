@@ -160,7 +160,7 @@ public class GetCustomerBankingInfoTestStep extends TestStep<GetCustomerBankingI
     
     @Override
     protected String getRequestDetails() {
-        return String.format("POST /customer/info - Body: {\"social_security_number\": \"%s\"}", 
+        return String.format("GET /customer/info?socialSecurityNumber=%s", 
                 ssn != null ? ssn : "null");
     }
     
