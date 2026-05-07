@@ -31,7 +31,7 @@ public class CustomerBankingController extends BaseController {
         }
 
         // Execute aggregation procedure
-        CustomerCreditInfoResponse customerCreditInfo = runProcedure(
+        CustomerCreditInfoResponse customerCreditInfo = executeProcedure(
                 new GetCustomerCreditInfoProcedure(socialSecurityNumber));
 
         if (customerCreditInfo != null) {

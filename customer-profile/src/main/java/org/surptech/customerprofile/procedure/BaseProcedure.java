@@ -7,12 +7,11 @@ import org.surptech.customerprofile.service.ApplicationServices;
 @Getter
 public abstract class BaseProcedure<RequestType, ResponseType> {
     protected final ApplicationServices applicationServices;
-
-    RequestType request;
-    ResponseType response;
+    protected final RequestType request;
 
     protected BaseProcedure() {
         this.applicationServices = ApplicationContextProvider.getBean(ApplicationServices.class);
+        this.request = null;
     }
 
     protected BaseProcedure(RequestType request) {

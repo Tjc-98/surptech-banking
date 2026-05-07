@@ -30,11 +30,11 @@ public class GetCustomerBankingInfoTestStep extends TestStep<GetCustomerBankingI
     /**
      * Set the SSN to query
      * 
-     * @param ssn Social Security Number
+     * @param socialSecurityNumber Social Security Number
      * @return This test step for chaining
      */
-    public GetCustomerBankingInfoTestStep withSsn(String ssn) {
-        this.ssn = ssn;
+    public GetCustomerBankingInfoTestStep withSsn(String socialSecurityNumber) {
+        this.ssn = socialSecurityNumber;
         return this;
     }
     
@@ -52,14 +52,14 @@ public class GetCustomerBankingInfoTestStep extends TestStep<GetCustomerBankingI
     /**
      * Verify customer profile data matches expected values
      * 
-     * @param ssn Expected SSN
+     * @param socialSecurityNumber Expected SSN
      * @param firstName Expected first name
      * @param lastName Expected last name
      * @param address Expected address
      * @return This test step for chaining
      */
-    public GetCustomerBankingInfoTestStep verifyCustomerProfile(String ssn, String firstName, String lastName, String address) {
-        this.expectedSsn = ssn;
+    public GetCustomerBankingInfoTestStep verifyCustomerProfile(String socialSecurityNumber, String firstName, String lastName, String address) {
+        this.expectedSsn = socialSecurityNumber;
         this.expectedFirstName = firstName;
         this.expectedLastName = lastName;
         this.expectedAddress = address;
@@ -109,10 +109,8 @@ public class GetCustomerBankingInfoTestStep extends TestStep<GetCustomerBankingI
         assertNotNull(response, "Response should not be null");
         
         // Verify status code
-        if (expectedStatusCode != null) {
-            assertEquals(expectedStatusCode, response.getStatusCode(),
-                    String.format("Expected status code %d but got %d", expectedStatusCode, response.getStatusCode()));
-        }
+        assertEquals(expectedStatusCode, response.getStatusCode(),
+                String.format("Expected status code %d but got %d", expectedStatusCode, response.getStatusCode()));
         
         // Verify response time if specified
         if (maxResponseTimeMs != null) {

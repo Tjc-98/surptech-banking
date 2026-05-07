@@ -67,7 +67,7 @@ public class GetCustomerCreditInfoProcedure extends BaseProcedure<String, Custom
         CustomerCreditInfoEntity entity = customerCreditInfoEntityBuilder.build();
 
         // Convert entity to response DTO
-        response = CustomerCreditInfoMapper.toResponse(entity);
+        CustomerCreditInfoResponse response = CustomerCreditInfoMapper.toResponse(entity);
         
         log.info("Successfully aggregated customer and credit information for SSN: {}", request);
 

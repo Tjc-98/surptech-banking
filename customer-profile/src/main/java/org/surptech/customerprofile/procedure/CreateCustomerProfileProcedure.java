@@ -26,9 +26,9 @@ public class CreateCustomerProfileProcedure extends BaseProcedure<CustomerProfil
         CustomerProfileEntity savedEntity = customerProfileRepository.save(entity);
         
         // Convert entity back to response DTO
-        response = CustomerProfileMapper.toResponse(savedEntity);
+        CustomerProfileResponse response = CustomerProfileMapper.toResponse(savedEntity);
         
-         log.info("Created customer profile for SocialSecurityNumber: {}", response.getSocialSecurityNumber());
+        log.info("Created customer profile for SocialSecurityNumber: {}", response.getSocialSecurityNumber());
 
         return response;
     }

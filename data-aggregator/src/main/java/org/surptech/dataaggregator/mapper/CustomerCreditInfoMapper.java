@@ -26,23 +26,4 @@ public class CustomerCreditInfoMapper {
                 .interestRate(entity.getInterestRate())
                 .build();
     }
-
-    /**
-     * Convert response DTO to internal entity
-     */
-    public static CustomerCreditInfoEntity toEntity(CustomerCreditInfoResponse response) {
-        if (response == null) {
-            return null;
-        }
-        
-        return CustomerCreditInfoEntity.builder()
-                .socialSecurityNumber(response.getSocialSecurityNumber())
-                .firstName(response.getFirstName())
-                .lastName(response.getLastName())
-                .address(response.getAddress())
-                .currentBalance(response.getCurrentBalance())
-                .spendBalance(response.getSpendBalance())
-                .interestRate(response.getInterestRate())
-                .build();
-    }
 }

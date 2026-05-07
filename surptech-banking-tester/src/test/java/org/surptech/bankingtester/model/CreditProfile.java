@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 /**
  * Credit Profile model for test assertions
  */
@@ -21,11 +19,11 @@ public class CreditProfile {
     private String socialSecurityNumber;
     
     @JsonProperty("current_balance")
-    private BigDecimal currentBalance;
+    private Double currentBalance;
     
     @JsonProperty("spend_balance")
-    private BigDecimal spendBalance;
+    private Double spendBalance;
     
     @JsonProperty("interest_rate")
-    private BigDecimal interestRate;
+    private Double interestRate;
 }

@@ -48,9 +48,9 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
 
     private CustomerProfileEntity insert(CustomerProfileEntity customerProfile) {
         log.info("Inserting new customer profile: {}", customerProfile.getSocialSecurityNumber());
-        String sqlQuery = "INSERT INTO customer_profile (social_security_number, first_name, last_name, address) VALUES (?, ?, ?, ?)";
         
-        jdbcTemplate.update(sqlQuery,
+        jdbcTemplate.update(
+            "INSERT INTO customer_profile (social_security_number, first_name, last_name, address) VALUES (?, ?, ?, ?)",
             customerProfile.getSocialSecurityNumber(),
             customerProfile.getFirstName(),
             customerProfile.getLastName(),
@@ -63,9 +63,9 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
 
     private CustomerProfileEntity update(CustomerProfileEntity customerProfile) {
         log.info("Updating customer profile: {}", customerProfile.getSocialSecurityNumber());
-        String sqlQuery = "UPDATE customer_profile SET first_name = ?, last_name = ?, address = ? WHERE social_security_number = ?";
         
-        jdbcTemplate.update(sqlQuery,
+        jdbcTemplate.update(
+            "UPDATE customer_profile SET first_name = ?, last_name = ?, address = ? WHERE social_security_number = ?",
             customerProfile.getFirstName(),
             customerProfile.getLastName(),
             customerProfile.getAddress(),
@@ -79,9 +79,12 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
     @Override
     public Optional<CustomerProfileEntity> findBySocialSecurityNumber(String socialSecurityNumber) {
         log.debug("Finding customer profile by SocialSecurityNumber: {}", socialSecurityNumber);
-        String sqlQuery = "SELECT * FROM customer_profile WHERE social_security_number = ?";
         
-        List<CustomerProfileEntity> results = jdbcTemplate.query(sqlQuery, rowMapper, socialSecurityNumber);
+        List<CustomerProfileEntity> results = jdbcTemplate.query(
+            "SELECT * FROM customer_profile WHERE social_security_number = ?",
+            rowMapper,
+            socialSecurityNumber
+        );
         
         if (results.isEmpty()) {
             log.debug("Customer profile not found for SocialSecurityNumber: {}", socialSecurityNumber);
@@ -95,8 +98,10 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
     @Override
     public List<CustomerProfileEntity> findAll() {
         log.info("Retrieving all customer profiles");
-        String sqlQuery = "SELECT * FROM customer_profile";
-        List<CustomerProfileEntity> profiles = jdbcTemplate.query(sqlQuery, rowMapper);
+        List<CustomerProfileEntity> profiles = jdbcTemplate.query(
+            "SELECT * FROM customer_profile",
+            rowMapper
+        );
         log.info("Retrieved {} customer profiles", profiles.size());
         return profiles;
     }
@@ -104,8 +109,10 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
     @Override
     public void deleteBySocialSecurityNumber(String socialSecurityNumber) {
         log.info("Deleting customer profile with SocialSecurityNumber: {}", socialSecurityNumber);
-        String sqlQuery = "DELETE FROM customer_profile WHERE social_security_number = ?";
-        int rowsAffected = jdbcTemplate.update(sqlQuery, socialSecurityNumber);
+        int rowsAffected = jdbcTemplate.update(
+            "DELETE FROM customer_profile WHERE social_security_number = ?",
+            socialSecurityNumber
+        );
         log.info("Deleted {} customer profile(s)", rowsAffected);
     }
 }

@@ -17,7 +17,7 @@ public class CustomerProfileController extends BaseController {
     public ResponseEntity<CustomerProfileResponse> getCustomerProfile(
             @NonNull @RequestParam("socialSecurityNumber") String socialSecurityNumber) {
 
-        CustomerProfileResponse customerProfile = runProcedure(
+        CustomerProfileResponse customerProfile = executeProcedure(
                 new GetCustomerProfileProcedure(socialSecurityNumber));
 
         if (customerProfile != null) {
@@ -31,7 +31,8 @@ public class CustomerProfileController extends BaseController {
     public ResponseEntity<CustomerProfileResponse> createCustomerProfile(
             @NonNull @RequestBody CustomerProfileRequest customerProfileRequest) {
 
-        CustomerProfileResponse customerProfile = runProcedure(new CreateCustomerProfileProcedure(customerProfileRequest));
+        CustomerProfileResponse customerProfile = executeProcedure(
+                new CreateCustomerProfileProcedure(customerProfileRequest));
 
         if (customerProfile != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(customerProfile);

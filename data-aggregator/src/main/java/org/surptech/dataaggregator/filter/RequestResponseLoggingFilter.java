@@ -24,51 +24,51 @@ public class RequestResponseLoggingFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         // Wrap request and response to cache content
-        ContentCachingRequestWrapper cachedRequestWrapper = new ContentCachingRequestWrapper(httpRequest, 0);
-        ContentCachingResponseWrapper cachedResponseWrapper = new ContentCachingResponseWrapper(httpResponse);
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(httpRequest, 0);
+        ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(httpResponse);
 
         long startTime = System.currentTimeMillis();
 
         try {
             // Log incoming request
-            logRequest(cachedRequestWrapper);
+            logRequest(requestWrapper);
 
             // Continue with the filter chain
-            chain.doFilter(cachedRequestWrapper, cachedResponseWrapper);
+            chain.doFilter(requestWrapper, responseWrapper);
 
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             
             // Log outgoing response
-            logResponse(cachedResponseWrapper, duration);
+            logResponse(responseWrapper, duration);
 
             // Copy response content back to original response
-            cachedResponseWrapper.copyBodyToResponse();
+            responseWrapper.copyBodyToResponse();
         }
     }
 
-    private void logRequest(ContentCachingRequestWrapper cachedRequest) {
+    private void logRequest(ContentCachingRequestWrapper requestWrapper) {
         StringBuilder requestLog = new StringBuilder();
         requestLog.append("\n========== Incoming Request ==========\n");
-        requestLog.append("Method: ").append(cachedRequest.getMethod()).append("\n");
-        requestLog.append("URI: ").append(cachedRequest.getRequestURI());
+        requestLog.append("Method: ").append(requestWrapper.getMethod()).append("\n");
+        requestLog.append("URI: ").append(requestWrapper.getRequestURI());
 
-        if (cachedRequest.getQueryString() != null) {
-            requestLog.append("?").append(cachedRequest.getQueryString());
+        if (requestWrapper.getQueryString() != null) {
+            requestLog.append("?").append(requestWrapper.getQueryString());
         }
         requestLog.append("\n");
         
         // Log headers
         requestLog.append("Headers:\n");
-        Enumeration<String> headerNames = cachedRequest.getHeaderNames();
+        Enumeration<String> headerNames = requestWrapper.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            String headerValue = cachedRequest.getHeader(headerName);
+            String headerValue = requestWrapper.getHeader(headerName);
             requestLog.append("  ").append(headerName).append(": ").append(headerValue).append("\n");
         }
         
         // Log request body
-        byte[] contentBytes = cachedRequest.getContentAsByteArray();
+        byte[] contentBytes = requestWrapper.getContentAsByteArray();
         if (contentBytes.length > 0) {
             String requestBody = new String(contentBytes, StandardCharsets.UTF_8);
             requestLog.append("Body: ").append(requestBody).append("\n");
@@ -78,21 +78,21 @@ public class RequestResponseLoggingFilter implements Filter {
         log.info(requestLog.toString());
     }
 
-    private void logResponse(ContentCachingResponseWrapper cachedResponse, long duration) {
+    private void logResponse(ContentCachingResponseWrapper responseWrapper, long duration) {
         StringBuilder responseLog = new StringBuilder();
         responseLog.append("\n========== Outgoing Response ==========\n");
-        responseLog.append("Status: ").append(cachedResponse.getStatus()).append("\n");
+        responseLog.append("Status: ").append(responseWrapper.getStatus()).append("\n");
         responseLog.append("Duration: ").append(duration).append(" ms\n");
         
         // Log response headers
         responseLog.append("Headers:\n");
-        cachedResponse.getHeaderNames().forEach(headerName -> {
-            String headerValue = cachedResponse.getHeader(headerName);
+        responseWrapper.getHeaderNames().forEach(headerName -> {
+            String headerValue = responseWrapper.getHeader(headerName);
             responseLog.append("  ").append(headerName).append(": ").append(headerValue).append("\n");
         });
         
         // Log response body
-        byte[] contentBytes = cachedResponse.getContentAsByteArray();
+        byte[] contentBytes = responseWrapper.getContentAsByteArray();
         if (contentBytes.length > 0) {
             String responseBody = new String(contentBytes, StandardCharsets.UTF_8);
             responseLog.append("Body: ").append(responseBody).append("\n");

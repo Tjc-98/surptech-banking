@@ -24,12 +24,12 @@ public class GetCustomerProfileProcedure extends BaseProcedure<String, CustomerP
                 customerProfileRepository.findBySocialSecurityNumber(request);
 
         if (customerProfileEntity.isPresent()) {
-            response = CustomerProfileMapper.toResponse(customerProfileEntity.get());
+            CustomerProfileResponse response = CustomerProfileMapper.toResponse(customerProfileEntity.get());
             log.info("Found customer profile for SocialSecurityNumber: {}", request);
+            return response;
         } else {
             log.info("No customer profile found for SocialSecurityNumber: {}", request);
+            return null;
         }
-
-        return response;
     }
 }
