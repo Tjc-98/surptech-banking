@@ -31,6 +31,9 @@ public class CustomerProfileController extends BaseController {
     public ResponseEntity<CustomerProfileResponse> createCustomerProfile(
             @NonNull @RequestBody CustomerProfileRequest customerProfileRequest) {
 
+        // Validate request
+        customerProfileRequest.validate();
+
         CustomerProfileResponse customerProfile = executeProcedure(
                 new CreateCustomerProfileProcedure(customerProfileRequest));
 

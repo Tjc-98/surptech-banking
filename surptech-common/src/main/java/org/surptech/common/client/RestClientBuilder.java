@@ -1,7 +1,9 @@
 package org.surptech.common.client;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
@@ -101,8 +103,14 @@ public class RestClientBuilder {
         log.info("Building RestClient with baseUrl: {}, connectTimeout: {}ms, readTimeout: {}ms",
                 baseUrl, connectTimeout.toMillis(), readTimeout.toMillis());
 
+        // Create HTTP client factory with timeout configuration
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout((int) connectTimeout.toMillis());
+        factory.setReadTimeout((int) readTimeout.toMillis());
+
         RestClient.Builder builder = RestClient.builder()
-                .baseUrl(baseUrl);
+                .baseUrl(baseUrl)
+                .requestFactory(factory);
 
         // Add logging interceptor if enabled
         if (enableLogging) {

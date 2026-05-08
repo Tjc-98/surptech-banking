@@ -1,6 +1,8 @@
 package org.surptech.customerprofile.procedure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.surptech.common.procedure.BaseProcedure;
+import org.surptech.customerprofile.config.ApplicationContextProvider;
 import org.surptech.customerprofile.domain.response.CustomerProfileResponse;
 import org.surptech.customerprofile.domain.entity.CustomerProfileEntity;
 import org.surptech.customerprofile.mapper.CustomerProfileMapper;
@@ -15,11 +17,14 @@ public class GetCustomerProfileProcedure extends BaseProcedure<String, CustomerP
 
     public GetCustomerProfileProcedure(String socialSecurityNumber) {
         super(socialSecurityNumber);
-        this.customerProfileRepository = applicationServices.getCustomerProfileRepository();
+        this.customerProfileRepository = ApplicationContextProvider.getBean(CustomerProfileRepository.class);
     }
 
     @Override
-    public CustomerProfileResponse executeProcedure() {
+    protected CustomerProfileResponse executeProcedure() {
+        // Validate SSN format
+        org.surptech.common.validation.ValidationUtils.validateSocialSecurityNumber(request);
+        
         Optional<CustomerProfileEntity> customerProfileEntity = 
                 customerProfileRepository.findBySocialSecurityNumber(request);
 

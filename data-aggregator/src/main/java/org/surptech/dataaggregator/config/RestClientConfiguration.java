@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
+import org.surptech.common.client.RestClientBuilder;
+
+import java.time.Duration;
 
 @Configuration
 public class RestClientConfiguration {
@@ -19,22 +22,31 @@ public class RestClientConfiguration {
 
     @Bean(name = "customerProfileRestClient")
     public RestClient customerProfileRestClient() {
-        return RestClient.builder()
+        return RestClientBuilder.create()
                 .baseUrl(customerProfileUrl)
+                .connectTimeout(Duration.ofSeconds(5))
+                .readTimeout(Duration.ofSeconds(10))
+                .enableLogging(true)
                 .build();
     }
 
     @Bean(name = "creditProfileRestClient")
     public RestClient creditProfileRestClient() {
-        return RestClient.builder()
+        return RestClientBuilder.create()
                 .baseUrl(creditProfileUrl)
+                .connectTimeout(Duration.ofSeconds(5))
+                .readTimeout(Duration.ofSeconds(10))
+                .enableLogging(true)
                 .build();
     }
 
     @Bean(name = "authServerRestClient")
     public RestClient authServerRestClient() {
-        return RestClient.builder()
+        return RestClientBuilder.create()
                 .baseUrl(authServerUrl)
+                .connectTimeout(Duration.ofSeconds(5))
+                .readTimeout(Duration.ofSeconds(10))
+                .enableLogging(true)
                 .build();
     }
 }

@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.surptech.customerprofile.procedure.BaseProcedure;
+import org.surptech.common.procedure.BaseProcedure;
 
 @Slf4j
 public class BaseController {
@@ -16,11 +16,9 @@ public class BaseController {
         String requestPath = httpServletRequest.getServletPath();
 
         log.info("Incoming request for path: {}", requestPath);
-        log.info("Request data: {}", procedure.getRequest());
 
-        ResponseType response = procedure.executeProcedure();
+        ResponseType response = procedure.execute();
 
-        log.info("Response data: {}", response);
         log.info("Completed request for path: {}", requestPath);
 
         return response;

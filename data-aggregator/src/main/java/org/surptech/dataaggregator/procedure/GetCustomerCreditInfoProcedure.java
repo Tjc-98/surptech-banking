@@ -1,6 +1,7 @@
 package org.surptech.dataaggregator.procedure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.surptech.common.procedure.BaseProcedure;
 import org.surptech.dataaggregator.client.CreditProfileClient;
 import org.surptech.dataaggregator.client.CustomerProfileClient;
 import org.surptech.dataaggregator.config.ApplicationContextProvider;
@@ -27,7 +28,10 @@ public class GetCustomerCreditInfoProcedure extends BaseProcedure<String, Custom
     }
 
     @Override
-    public CustomerCreditInfoResponse executeProcedure() {
+    protected CustomerCreditInfoResponse executeProcedure() {
+        // Validate SSN format
+        org.surptech.common.validation.ValidationUtils.validateSocialSecurityNumber(request);
+        
         log.info("Aggregating customer and credit information for SSN: {}", request);
 
         // Fetch customer profile entity
