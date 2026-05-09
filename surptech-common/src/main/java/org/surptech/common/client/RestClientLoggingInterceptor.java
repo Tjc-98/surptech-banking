@@ -29,11 +29,11 @@ public class RestClientLoggingInterceptor implements ClientHttpRequestIntercepto
             response = execution.execute(request, body);
             logResponse(response, startTime);
             return response;
-        } catch (IOException e) {
+        } catch (IOException exception) {
             long duration = System.currentTimeMillis() - startTime;
             log.error("REST Client Request Failed - Method: {}, URI: {}, Duration: {}ms, Error: {}",
-                    request.getMethod(), request.getURI(), duration, e.getMessage());
-            throw e;
+                    request.getMethod(), request.getURI(), duration, exception.getMessage());
+            throw exception;
         }
     }
 

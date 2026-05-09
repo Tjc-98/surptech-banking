@@ -21,8 +21,10 @@ public abstract class BaseProcedure<REQUEST, RESPONSE> {
 
     /**
      * Executes the procedure with standard logging and error handling.
+     * Logs entry, exit, and any exceptions that occur.
      *
      * @return the procedure response
+     * @throws Exception if the procedure fails
      */
     public final RESPONSE execute() {
         String procedureName = this.getClass().getSimpleName();
@@ -38,9 +40,9 @@ public abstract class BaseProcedure<REQUEST, RESPONSE> {
             
             return response;
             
-        } catch (Exception e) {
-            log.error("Procedure {} failed with error: {}", procedureName, e.getMessage(), e);
-            throw e;
+        } catch (Exception exception) {
+            log.error("Procedure {} failed with error: {}", procedureName, exception.getMessage(), exception);
+            throw exception;
         }
     }
 

@@ -37,33 +37,58 @@ public class RestClientBuilder {
 
     /**
      * Sets the base URL for the RestClient.
+     * URL must be non-empty and start with http:// or https://.
      *
      * @param baseUrl the base URL
      * @return this builder
+     * @throws IllegalArgumentException if URL is invalid
      */
     public RestClientBuilder baseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+        if (baseUrl == null || baseUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("Base URL cannot be null or empty");
+        }
+        String trimmedUrl = baseUrl.trim();
+        if (!trimmedUrl.startsWith("http://") && !trimmedUrl.startsWith("https://")) {
+            throw new IllegalArgumentException("Base URL must start with http:// or https://");
+        }
+        this.baseUrl = trimmedUrl;
         return this;
     }
 
     /**
      * Sets the connection timeout.
+     * Timeout must be positive.
      *
      * @param connectTimeout connection timeout duration
      * @return this builder
+     * @throws IllegalArgumentException if timeout is null, zero, or negative
      */
     public RestClientBuilder connectTimeout(Duration connectTimeout) {
+        if (connectTimeout == null) {
+            throw new IllegalArgumentException("Connect timeout cannot be null");
+        }
+        if (connectTimeout.isNegative() || connectTimeout.isZero()) {
+            throw new IllegalArgumentException("Connect timeout must be positive");
+        }
         this.connectTimeout = connectTimeout;
         return this;
     }
 
     /**
      * Sets the read timeout.
+     * Timeout must be positive.
      *
      * @param readTimeout read timeout duration
      * @return this builder
+     * @throws IllegalArgumentException if timeout is null, zero, or negative
      */
     public RestClientBuilder readTimeout(Duration readTimeout) {
+        if (readTimeout == null) {
+            throw new IllegalArgumentException("Read timeout cannot be null");
+        }
+        if (readTimeout.isNegative() || readTimeout.isZero()) {
+            throw new IllegalArgumentException("Read timeout must be positive");
+        }
         this.readTimeout = readTimeout;
         return this;
     }
@@ -94,10 +119,11 @@ public class RestClientBuilder {
      * Builds and returns the configured RestClient.
      *
      * @return configured RestClient instance
+     * @throws IllegalStateException if required configuration is missing
      */
     public RestClient build() {
-        if (baseUrl == null || baseUrl.isEmpty()) {
-            throw new IllegalStateException("Base URL must be set");
+        if (baseUrl == null) {
+            throw new IllegalStateException("Base URL must be set before building");
         }
 
         log.info("Building RestClient with baseUrl: {}, connectTimeout: {}ms, readTimeout: {}ms",

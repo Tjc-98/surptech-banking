@@ -16,9 +16,24 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class BaseResponse implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private LocalDateTime timestamp;
 
+    /**
+     * Default constructor that sets timestamp to current time.
+     */
     protected BaseResponse() {
         this.timestamp = LocalDateTime.now();
+    }
+
+    /**
+     * Constructor that allows setting a custom timestamp.
+     * Useful for testing and serialization scenarios.
+     *
+     * @param timestamp the timestamp to set, or null to use current time
+     */
+    protected BaseResponse(LocalDateTime timestamp) {
+        this.timestamp = timestamp != null ? timestamp : LocalDateTime.now();
     }
 }

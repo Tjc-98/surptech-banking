@@ -19,17 +19,23 @@ import org.surptech.common.exception.ValidationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Error type constants for consistency
+    private static final String ERROR_TYPE_NOT_FOUND = "Not Found";
+    private static final String ERROR_TYPE_VALIDATION_FAILED = "Validation Failed";
+    private static final String ERROR_TYPE_SERVICE_COMMUNICATION_ERROR = "Service Communication Error";
+    private static final String ERROR_TYPE_INTERNAL_SERVER_ERROR = "Internal Server Error";
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
-            ResourceNotFoundException ex, WebRequest request) {
-        
-        log.warn("Resource not found: {}", ex.getMessage());
-        
+            ResourceNotFoundException exception, WebRequest request) {
+
+        log.warn("Resource not found: {}", exception.getMessage());
+
         ErrorResponse errorResponse = ErrorResponse.of(
                 HttpStatus.NOT_FOUND.value(),
-                "Not Found",
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", "")
+                ERROR_TYPE_NOT_FOUND,
+                exception.getMessage(),
+                extractRequestPath(request)
         );
         
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -37,16 +43,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
-            ValidationException ex, WebRequest request) {
-        
-        log.warn("Validation failed: {}", ex.getMessage());
-        
+            ValidationException exception, WebRequest request) {
+
+        log.warn("Validation failed: {}", exception.getMessage());
+
         ErrorResponse errorResponse = ErrorResponse.of(
                 HttpStatus.BAD_REQUEST.value(),
-                "Validation Failed",
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", ""),
-                ex.getErrors()
+                ERROR_TYPE_VALIDATION_FAILED,
+                exception.getMessage(),
+                extractRequestPath(request),
+                exception.getErrors()
         );
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
@@ -54,33 +60,43 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ServiceCommunicationException.class)
     public ResponseEntity<ErrorResponse> handleServiceCommunicationException(
-            ServiceCommunicationException ex, WebRequest request) {
-        
-        log.error("Service communication error: {}", ex.getMessage());
-        
+            ServiceCommunicationException exception, WebRequest request) {
+
+        log.error("Service communication error: {}", exception.getMessage());
+
         ErrorResponse errorResponse = ErrorResponse.of(
-                ex.getStatusCode(),
-                "Service Communication Error",
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", "")
+                exception.getStatusCode(),
+                ERROR_TYPE_SERVICE_COMMUNICATION_ERROR,
+                exception.getMessage(),
+                extractRequestPath(request)
         );
         
-        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
+        return ResponseEntity.status(exception.getStatusCode()).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(
-            Exception ex, WebRequest request) {
-        
-        log.error("Unexpected error occurred", ex);
-        
+            Exception exception, WebRequest request) {
+
+        log.error("Unexpected error occurred", exception);
+
         ErrorResponse errorResponse = ErrorResponse.of(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
+                ERROR_TYPE_INTERNAL_SERVER_ERROR,
                 "An unexpected error occurred. Please try again later.",
-                request.getDescription(false).replace("uri=", "")
+                extractRequestPath(request)
         );
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
+    /**
+     * Extracts the request path from WebRequest by removing the "uri=" prefix.
+     *
+     * @param request the web request
+     * @return the extracted request path
+     */
+    private String extractRequestPath(WebRequest request) {
+        return request.getDescription(false).replace("uri=", "");
     }
 }

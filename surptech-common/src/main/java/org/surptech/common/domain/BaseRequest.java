@@ -13,6 +13,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class BaseRequest implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Validates the request data.
      * Override this method in subclasses to implement specific validation logic.
