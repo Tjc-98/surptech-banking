@@ -5,12 +5,23 @@ import org.surptech.customerprofile.domain.response.CustomerProfileResponse;
 import org.surptech.customerprofile.domain.entity.CustomerProfileEntity;
 
 /**
- * Mapper to convert between DTOs and internal entities.
+ * Mapper to convert between DTOs and internal entities for customer profile operations.
+ *
+ * This mapper provides one-way conversion methods:
+ * - CustomerProfileRequest (DTO) -> CustomerProfileEntity (internal)
+ * - CustomerProfileEntity (internal) -> CustomerProfileResponse (DTO)
  */
 public class CustomerProfileMapper {
 
+    private CustomerProfileMapper() {
+        // Utility class - should not be instantiated
+    }
+
     /**
-     * Convert request DTO to internal entity
+     * Converts a CustomerProfileRequest DTO to an internal CustomerProfileEntity.
+     *
+     * @param request the request DTO to convert
+     * @return the converted entity, or null if the request is null
      */
     public static CustomerProfileEntity toEntity(CustomerProfileRequest request) {
         if (request == null) {
@@ -26,7 +37,10 @@ public class CustomerProfileMapper {
     }
 
     /**
-     * Convert internal entity to response DTO
+     * Converts a CustomerProfileEntity to a CustomerProfileResponse DTO.
+     *
+     * @param entity the entity to convert
+     * @return the converted response DTO, or null if the entity is null
      */
     public static CustomerProfileResponse toResponse(CustomerProfileEntity entity) {
         if (entity == null) {

@@ -16,40 +16,70 @@ import java.util.Optional;
 public class SqliteCustomerProfileRepository implements CustomerProfileRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<CustomerProfileEntity> customerProfileRowMapper;
 
+    /**
+     * Constructs a SqliteCustomerProfileRepository with the provided JdbcTemplate.
+     *
+     * @param jdbcTemplate the JdbcTemplate for database operations
+     */
     public SqliteCustomerProfileRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        log.info("SqliteCustomerProfileRepository initialized");
+        this.customerProfileRowMapper = this::mapRowToCustomerProfileEntity;
+        log.info("SqliteCustomerProfileRepository initialized successfully");
     }
 
-    private final RowMapper<CustomerProfileEntity> rowMapper = (resultSet, rowNumber) -> 
-        CustomerProfileEntity.builder()
-            .socialSecurityNumber(resultSet.getString("social_security_number"))
-            .firstName(resultSet.getString("first_name"))
-            .lastName(resultSet.getString("last_name"))
-            .address(resultSet.getString("address"))
-            .build();
+    /**
+     * Maps a result set row to a CustomerProfileEntity.
+     *
+     * @param resultSet the result set to map
+     * @param rowNumber the row number
+     * @return the mapped CustomerProfileEntity
+     */
+    private CustomerProfileEntity mapRowToCustomerProfileEntity(java.sql.ResultSet resultSet, int rowNumber)
+            throws java.sql.SQLException {
+        return CustomerProfileEntity.builder()
+                .socialSecurityNumber(resultSet.getString("social_security_number"))
+                .firstName(resultSet.getString("first_name"))
+                .lastName(resultSet.getString("last_name"))
+                .address(resultSet.getString("address"))
+                .build();
+    }
 
     @Override
     public CustomerProfileEntity save(CustomerProfileEntity customerProfile) {
-        log.debug("Saving customer profile with SocialSecurityNumber: {}", customerProfile.getSocialSecurityNumber());
+        if (customerProfile == null) {
+            log.warn("Attempted to save null customer profile");
+            throw new IllegalArgumentException("Customer profile cannot be null");
+        }
 
-        // Check if customer already exists by SocialSecurityNumber
-        Optional<CustomerProfileEntity> existing = findBySocialSecurityNumber(customerProfile.getSocialSecurityNumber());
-        
-        if (existing.isPresent()) {
+        log.debug("Saving customer profile with social security number: {}",
+                  customerProfile.getSocialSecurityNumber());
+
+        // Check if customer already exists by social security number
+        Optional<CustomerProfileEntity> existingProfile =
+                findBySocialSecurityNumber(customerProfile.getSocialSecurityNumber());
+
+        if (existingProfile.isPresent()) {
             log.debug("Customer profile exists, updating");
-            return update(customerProfile);
+            return updateCustomerProfile(customerProfile);
         } else {
-            log.debug("Customer profile does not exist, inserting");
-            return insert(customerProfile);
+            log.debug("Customer profile does not exist, inserting new record");
+            return insertCustomerProfile(customerProfile);
         }
     }
 
-    private CustomerProfileEntity insert(CustomerProfileEntity customerProfile) {
-        log.info("Inserting new customer profile: {}", customerProfile.getSocialSecurityNumber());
-        
-        jdbcTemplate.update(
+    /**
+     * Inserts a new customer profile into the database.
+     *
+     * @param customerProfile the customer profile entity to insert
+     * @return the inserted customer profile entity
+     */
+    private CustomerProfileEntity insertCustomerProfile(CustomerProfileEntity customerProfile) {
+        log.info("Inserting new customer profile with social security number: {}",
+                 customerProfile.getSocialSecurityNumber());
+
+        int rowsAffected = jdbcTemplate.update(
             "INSERT INTO customer_profile (social_security_number, first_name, last_name, address) VALUES (?, ?, ?, ?)",
             customerProfile.getSocialSecurityNumber(),
             customerProfile.getFirstName(),
@@ -57,14 +87,26 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
             customerProfile.getAddress()
         );
 
-        log.info("Customer profile inserted successfully");
+        if (rowsAffected > 0) {
+            log.info("Customer profile inserted successfully");
+        } else {
+            log.warn("Customer profile insertion returned 0 rows affected");
+        }
+
         return customerProfile;
     }
 
-    private CustomerProfileEntity update(CustomerProfileEntity customerProfile) {
-        log.info("Updating customer profile: {}", customerProfile.getSocialSecurityNumber());
-        
-        jdbcTemplate.update(
+    /**
+     * Updates an existing customer profile in the database.
+     *
+     * @param customerProfile the customer profile entity to update
+     * @return the updated customer profile entity
+     */
+    private CustomerProfileEntity updateCustomerProfile(CustomerProfileEntity customerProfile) {
+        log.info("Updating customer profile with social security number: {}",
+                 customerProfile.getSocialSecurityNumber());
+
+        int rowsAffected = jdbcTemplate.update(
             "UPDATE customer_profile SET first_name = ?, last_name = ?, address = ? WHERE social_security_number = ?",
             customerProfile.getFirstName(),
             customerProfile.getLastName(),
@@ -72,24 +114,37 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
             customerProfile.getSocialSecurityNumber()
         );
         
-        log.info("Customer profile updated successfully");
+        if (rowsAffected > 0) {
+            log.info("Customer profile updated successfully");
+        } else {
+            log.warn("Customer profile update returned 0 rows affected");
+        }
+
         return customerProfile;
     }
 
     @Override
     public Optional<CustomerProfileEntity> findBySocialSecurityNumber(String socialSecurityNumber) {
-        log.debug("Finding customer profile by SocialSecurityNumber: {}", socialSecurityNumber);
-        
+        if (socialSecurityNumber == null || socialSecurityNumber.trim().isEmpty()) {
+            log.warn("Attempted to find customer profile with null or empty social security number");
+            return Optional.empty();
+        }
+
+        log.debug("Finding customer profile by social security number: {}", socialSecurityNumber);
+
         List<CustomerProfileEntity> results = jdbcTemplate.query(
             "SELECT * FROM customer_profile WHERE social_security_number = ?",
-            rowMapper,
+            customerProfileRowMapper,
             socialSecurityNumber
         );
         
         if (results.isEmpty()) {
-            log.debug("Customer profile not found for SocialSecurityNumber: {}", socialSecurityNumber);
+            log.debug("No customer profile found for social security number: {}", socialSecurityNumber);
+        } else if (results.size() == 1) {
+            log.debug("Customer profile found for social security number: {}", socialSecurityNumber);
         } else {
-            log.debug("Customer profile found for SocialSecurityNumber: {}", socialSecurityNumber);
+            log.warn("Multiple customer profiles found for social security number: {} (found: {})",
+                     socialSecurityNumber, results.size());
         }
         
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -100,19 +155,29 @@ public class SqliteCustomerProfileRepository implements CustomerProfileRepositor
         log.info("Retrieving all customer profiles");
         List<CustomerProfileEntity> profiles = jdbcTemplate.query(
             "SELECT * FROM customer_profile",
-            rowMapper
+            customerProfileRowMapper
         );
-        log.info("Retrieved {} customer profiles", profiles.size());
+        log.info("Retrieved {} customer profile(s)", profiles.size());
         return profiles;
     }
 
     @Override
     public void deleteBySocialSecurityNumber(String socialSecurityNumber) {
-        log.info("Deleting customer profile with SocialSecurityNumber: {}", socialSecurityNumber);
+        if (socialSecurityNumber == null || socialSecurityNumber.trim().isEmpty()) {
+            log.warn("Attempted to delete customer profile with null or empty social security number");
+            throw new IllegalArgumentException("Social security number cannot be null or empty");
+        }
+
+        log.info("Deleting customer profile with social security number: {}", socialSecurityNumber);
         int rowsAffected = jdbcTemplate.update(
             "DELETE FROM customer_profile WHERE social_security_number = ?",
             socialSecurityNumber
         );
-        log.info("Deleted {} customer profile(s)", rowsAffected);
+
+        if (rowsAffected > 0) {
+            log.info("Successfully deleted {} customer profile(s)", rowsAffected);
+        } else {
+            log.warn("No customer profile found to delete for social security number: {}", socialSecurityNumber);
+        }
     }
 }

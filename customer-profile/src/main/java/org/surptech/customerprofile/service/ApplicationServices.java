@@ -1,14 +1,21 @@
 package org.surptech.customerprofile.service;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.surptech.customerprofile.repository.CustomerProfileRepository;
+import lombok.extern.slf4j.Slf4j;
 
-@Getter
-@Service
+/**
+ * Placeholder for application services.
+ *
+ * Note: This class is currently unused and serves only as a placeholder for future service implementations.
+ * The CustomerProfileRepository is accessed directly through ApplicationContextProvider in procedures.
+ *
+ * In the future, business logic can be centralized here instead of being distributed across procedures.
+ *
+ * @deprecated This class is not currently used and should be removed when service layer is properly implemented.
+ */
+@Slf4j
+@Deprecated(forRemoval = true)
 public class ApplicationServices {
 
-    @Autowired
-    private CustomerProfileRepository customerProfileRepository;
+    // Placeholder for future service layer implementation
+
 }
