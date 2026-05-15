@@ -1,3 +1,5 @@
+%%{init: {'flowchart': {'defaultRenderer': 'elk'}}}%%
+
 flowchart TD
     subgraph Legend["Legend"]
         direction LR
@@ -34,6 +36,7 @@ flowchart TD
     end
 
     subgraph SharedLib["Shared Library"]
+        direction TB
         Common["surptech-common\n---\nBase classes, utilities,\nvalidation, exception handling"]
     end
 
@@ -42,7 +45,7 @@ flowchart TD
     Webpage -. "Future: API calls" .-> DataAggregator
     Tester -. "Future: Authentication" .-> AuthServer
     
-    %% Layer connections (visible arrows without text)
+    %% Layer connections
     Legend ~~~ Client
     Client --> ServiceLayer
 
@@ -51,15 +54,13 @@ flowchart TD
     DataAggregator -- "GET /credit-profile/credit/get\n?socialSecurityNumber=XXX" --> CreditProfile
     DataAggregator -. "Future: Token validation" .-> AuthServer
     
-    %% Layer connections (visible arrows without text)
+    %% Keep vertical layer flow
     ServiceLayer --> DataLayer
+    DataLayer --> DatabaseLayer
 
     %% Data Layer to Database
     CustomerProfile -- "JDBC\nSQLite Driver" --> CustomerDB
     CreditProfile -- "JDBC\nSQLite Driver" --> CreditDB
-    
-    %% Layer connections (visible arrows without text)
-    DataLayer --> DatabaseLayer
 
     %% Health Checks
     DataAggregator -. "Health Check\nGET /customer-profile/management/health" .-> CustomerProfile
@@ -69,12 +70,10 @@ flowchart TD
     CustomerProfile -- "CustomerProfileResponse\n(JSON)" --> DataAggregator
     CreditProfile -- "CreditProfileResponse\n(JSON)" --> DataAggregator
 
-    %% Layer connections to Shared Library (visible arrows without text)
-    ServiceLayer --> SharedLib
-    DataLayer --> SharedLib
-
-    %% Note: Test suite uses its own independent model (CustomerBankingInfo)
-    %% which mirrors the API response structure but has NO dependency on surptech-common
+    %% Shared library placement helpers
+    DataAggregator ~~~ Common
+    CustomerProfile ~~~ Common
+    CreditProfile ~~~ Common
 
     %% Styling
     classDef implemented fill:#90EE90,stroke:#006400,stroke-width:2px,color:#000000
