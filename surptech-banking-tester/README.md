@@ -73,14 +73,11 @@ surptech-banking-tester/
 
 A workflow is provided in `.github/workflows/run-tests.yml`:
 
-**Automatic Triggers:**
-- Push to `main` or `develop` branches
-- Pull requests
-
-**Manual Trigger:**
+**Manual Trigger Only:**
 1. Go to Actions tab → "Run Integration Tests"
-2. Select test suite from dropdown
-3. Click "Run workflow"
+2. Click "Run workflow"
+3. Select test suite from dropdown
+4. Click "Run workflow" button
 
 **Features:**
 - Builds and starts all services automatically

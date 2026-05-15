@@ -44,26 +44,23 @@ run-tests.bat smoke               # Windows
 
 ### GitHub Actions
 
-The project includes a GitHub Actions workflow (`.github/workflows/run-tests.yml`) that:
+The project includes a GitHub Actions workflow (`.github/workflows/run-tests.yml`) that runs **manually only**.
 
-1. **Automatic Triggers:**
-   - Push to `main` or `develop` branches
-   - Pull requests to `main` or `develop`
-   - Runs `smoke` tests on PRs, `ci` suite on pushes
+**Manual Trigger:**
+1. Go to Actions tab in your repository
+2. Select "Run Integration Tests" workflow
+3. Click "Run workflow" button
+4. Select suite from dropdown (smoke, integration, error-handling, health, all, ci)
+5. Click "Run workflow" to start
 
-2. **Manual Trigger:**
-   - Go to Actions tab → "Run Integration Tests"
-   - Select suite from dropdown
-   - Click "Run workflow"
-
-3. **Features:**
-   - Builds and starts all services automatically
-   - Waits for services to be healthy
-   - Runs selected test suite
-   - Generates Allure reports
-   - Uploads test results as artifacts
-   - Publishes test report summary
-   - Stops services after tests
+**Features:**
+- Builds and starts all services automatically
+- Waits for services to be healthy
+- Runs selected test suite
+- Generates Allure reports
+- Uploads test results as artifacts
+- Publishes test report summary
+- Stops services after tests
 
 ### Jenkins Pipeline Example
 

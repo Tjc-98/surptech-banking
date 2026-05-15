@@ -1,20 +1,6 @@
 name: Run Integration Tests
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-    paths:
-      - 'surptech-banking-tester/**'
-      - 'customer-profile/**'
-      - 'credit-profile/**'
-      - 'data-aggregator/**'
-      - '.github/workflows/run-tests.yml'
-  pull_request:
-    branches:
-      - main
-      - develop
   workflow_dispatch:
     inputs:
       suite:
@@ -52,13 +38,7 @@ jobs:
       - name: Determine test suite
         id: suite
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            SUITE="${{ github.event.inputs.suite }}"
-          elif [ "${{ github.event_name }}" == "pull_request" ]; then
-            SUITE="smoke"
-          else
-            SUITE="ci"
-          fi
+          SUITE="${{ github.event.inputs.suite }}"
           echo "suite=$SUITE" >> $GITHUB_OUTPUT
           echo "Running test suite: $SUITE"
 
