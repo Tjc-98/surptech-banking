@@ -27,6 +27,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Debug - Check directory structure
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          echo "Checking for surptech-banking-tester:"
+          ls -la surptech-banking-tester/ || echo "Directory not found"
+          echo "Checking for pom.xml in tester:"
+          test -f surptech-banking-tester/pom.xml && echo "POM EXISTS" || echo "POM NOT FOUND"
+
       - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
@@ -44,18 +54,18 @@ jobs:
           echo "=========================================="
 
       - name: Build common library
-        working-directory: surptech-common
+        working-directory: ./surptech-common
         run: mvn clean install -DskipTests
         
       - name: Start Customer Profile Service
-        working-directory: customer-profile
+        working-directory: ./customer-profile
         run: |
           mvn clean package -DskipTests
           nohup java -jar target/customer-profile-*.jar > ../customer-profile.log 2>&1 &
           echo $! > ../customer-profile.pid
 
       - name: Start Data Aggregator Service
-        working-directory: data-aggregator
+        working-directory: ./data-aggregator
         run: |
           mvn clean package -DskipTests
           nohup java -jar target/data-aggregator-*.jar > ../data-aggregator.log 2>&1 &
@@ -87,13 +97,16 @@ jobs:
           done
 
       - name: Run tests with suite - ${{ steps.suite.outputs.suite }}
-        working-directory: surptech-banking-tester
+        working-directory: ./surptech-banking-tester
         run: |
           echo "=========================================="
           echo "Executing: ${{ steps.suite.outputs.suite }} test suite"
           echo "=========================================="
-          echo "Current directory: $(pwd)"
-          echo "POM file exists: $(test -f pom.xml && echo 'YES' || echo 'NO')"
+          pwd
+          ls -la
+          echo "Checking for pom.xml:"
+          test -f pom.xml && echo "POM EXISTS" || echo "POM NOT FOUND"
+          echo "=========================================="
           if [ "${{ steps.suite.outputs.suite }}" == "all" ]; then
             mvn clean test
           else
@@ -102,7 +115,7 @@ jobs:
 
       - name: Generate Allure Report
         if: always()
-        working-directory: surptech-banking-tester
+        working-directory: ./surptech-banking-tester
         run: mvn allure:report
 
       - name: Upload Test Results
