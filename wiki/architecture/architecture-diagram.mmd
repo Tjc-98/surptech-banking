@@ -1,46 +1,88 @@
 flowchart TD
-    subgraph Client["Client"]
+    subgraph Legend["Legend"]
         direction LR
-        Tester["Tester\n(testingServices)"]
-        Webpage["Webpage\n(userInterface)"]
+        LegendImplemented["Implemented\nComponents"]
+        LegendNotImplemented["Not Implemented\nFuture Features"]
+        LegendDatabase["Database\nComponents"]
+        LegendLibrary["Shared Library\nDependencies"]
+        LegendImplemented ~~~ LegendNotImplemented ~~~ LegendDatabase ~~~ LegendLibrary
     end
 
-    subgraph Service["Service"]
+    subgraph Client["Client Layer"]
         direction LR
-        authServer["authServer"]
-        dataAggregator["dataAggregator"]
+        Tester["Integration Tests\n(surptech-banking-tester)\nREST Assured + JUnit\n---\nTest Suites:\n• Smoke Tests\n• Integration Tests\n• Error Handling Tests\n• Health Check Tests"]
+        Webpage["Web Application\n(Future Implementation)"]
     end
 
-    subgraph DataStore["DataStore"]
+    subgraph ServiceLayer["Service Layer"]
         direction TB
-        customerProfile["customerProfile\n---\nfirstName\nlastName\naddress\nsocialSecurityNumber"]
-        creditProfile["creditProfile\n---\ncurrentBalance\nspendBalance\ninterestRate"]
+        DataAggregator["Data Aggregator\nPort: 5555\nContext: /data-aggregator\n---\nAggregates customer\nand credit data"]
+        AuthServer["Auth Server\nPort: 5553\n(Not Implemented)"]
     end
 
-    subgraph Database["Database"]
+    subgraph DataLayer["Data Layer"]
+        direction TB
+        CustomerProfile["Customer Profile Service\nPort: 5551\nContext: /customer-profile\n---\nGET /customer/get\nPOST /customer/create\n---\nFields:\n• socialSecurityNumber (PK)\n• firstName\n• lastName\n• address"]
+        
+        CreditProfile["Credit Profile Service\nPort: 5552\nContext: /credit-profile\n---\nGET /credit/get\nPOST /credit/create\n---\nFields:\n• socialSecurityNumber (PK)\n• fullCreditBalance\n• spendBalance\n• interestRate"]
+    end
+
+    subgraph DatabaseLayer["Database Layer"]
         direction LR
-        postgres["postgres"]
-        sqlite["sqlite"]
-        postgres ~~~ sqlite
+        CustomerDB["SQLite\ncustomer-profile.db\n---\nTable: customer_profile"]
+        CreditDB["SQLite\ncredit-profile.db\n---\nTable: credit_profile"]
     end
 
-    %% Data aggregation flow
-    Client -- "getCustomerCreditInfo\n(socialSecurityNumber)" --> dataAggregator
-    dataAggregator -- "customerInfo\ncreditInfo" --> Client
+    subgraph SharedLib["Shared Library"]
+        Common["surptech-common\n---\nBase classes, utilities,\nvalidation, exception handling"]
+    end
 
-    %% Auth flow
-    Client -- "sendLoginInfo\n(username, password)" --> authServer
-    authServer -- "token" --> Client
+    %% Client to Service Layer
+    Tester -- "GET /banking/get?ssn=XXX" --> DataAggregator
+    Webpage -. "Future: API calls" .-> DataAggregator
+    Tester -. "Future: Authentication" .-> AuthServer
+    
+    %% Layer connections (visible arrows without text)
+    Legend ~~~ Client
+    Client --> ServiceLayer
 
-    %% Token validation - internal services
-    dataAggregator -- "validateToken" --> authServer
-    authServer -- "accepted/invalid" --> dataAggregator
+    %% Service Layer interactions
+    DataAggregator -- "GET /customer-profile/customer/get\n?socialSecurityNumber=XXX" --> CustomerProfile
+    DataAggregator -- "GET /credit-profile/credit/get\n?socialSecurityNumber=XXX" --> CreditProfile
+    DataAggregator -. "Future: Token validation" .-> AuthServer
+    
+    %% Layer connections (visible arrows without text)
+    ServiceLayer --> DataLayer
 
-    %% DataStore lookups
-    dataAggregator -- "getPersonInfo\n(socialSecurityNumber)" --> customerProfile
-    dataAggregator -- "getCreditInfo\n(socialSecurityNumber)" --> creditProfile
+    %% Data Layer to Database
+    CustomerProfile -- "JDBC\nSQLite Driver" --> CustomerDB
+    CreditProfile -- "JDBC\nSQLite Driver" --> CreditDB
+    
+    %% Layer connections (visible arrows without text)
+    DataLayer --> DatabaseLayer
 
-    %% Anchors to force vertical layout
-    Client --> Service
-    Service --> DataStore
-    DataStore --> Database
+    %% Health Checks
+    DataAggregator -. "Health Check\nGET /customer-profile/management/health" .-> CustomerProfile
+    DataAggregator -. "Health Check\nGET /credit-profile/management/health" .-> CreditProfile
+
+    %% Response Flow
+    CustomerProfile -- "CustomerProfileResponse\n(JSON)" --> DataAggregator
+    CreditProfile -- "CreditProfileResponse\n(JSON)" --> DataAggregator
+
+    %% Layer connections to Shared Library (visible arrows without text)
+    ServiceLayer --> SharedLib
+    DataLayer --> SharedLib
+
+    %% Note: Test suite uses its own independent model (CustomerBankingInfo)
+    %% which mirrors the API response structure but has NO dependency on surptech-common
+
+    %% Styling
+    classDef implemented fill:#90EE90,stroke:#006400,stroke-width:2px,color:#000000
+    classDef notImplemented fill:#FFB6C1,stroke:#8B0000,stroke-width:2px,stroke-dasharray: 5 5,color:#000000
+    classDef database fill:#87CEEB,stroke:#00008B,stroke-width:2px,color:#000000
+    classDef library fill:#FFE4B5,stroke:#8B4513,stroke-width:2px,color:#000000
+
+    class DataAggregator,CustomerProfile,CreditProfile,Tester,LegendImplemented implemented
+    class AuthServer,Webpage,LegendNotImplemented notImplemented
+    class CustomerDB,CreditDB,LegendDatabase database
+    class Common,LegendLibrary library
