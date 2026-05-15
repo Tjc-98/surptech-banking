@@ -40,3 +40,19 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+
+# Test Reports and Artifacts
+surefire-reports/
+failsafe-reports/
+allure-results/
+allure-report/
+test-output/
+test-logs/
+
+# Allure CLI (should be downloaded, not committed)
+.allure/
+
+# Service logs (from CI/CD runs)
+*-profile.log
+*-aggregator.log
+*.pid

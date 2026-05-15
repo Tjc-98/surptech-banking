@@ -1,0 +1,198 @@
+name: Run Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'surptech-banking-tester/**'
+      - 'customer-profile/**'
+      - 'credit-profile/**'
+      - 'data-aggregator/**'
+      - '.github/workflows/run-tests.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - all
+          - smoke
+          - integration
+          - error-handling
+          - health
+          - ci
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        java-version: [25]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Determine test suite
+        id: suite
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            SUITE="${{ github.event.inputs.suite }}"
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            SUITE="smoke"
+          else
+            SUITE="ci"
+          fi
+          echo "suite=$SUITE" >> $GITHUB_OUTPUT
+          echo "Running test suite: $SUITE"
+
+      - name: Build common library
+        run: |
+          cd surptech-common
+          mvn clean install -DskipTests
+        
+      - name: Start Customer Profile Service
+        run: |
+          cd customer-profile
+          mvn clean package -DskipTests
+          nohup java -jar target/customer-profile-*.jar > customer-profile.log 2>&1 &
+          echo $! > customer-profile.pid
+          
+      - name: Start Credit Profile Service
+        run: |
+          cd credit-profile
+          mvn clean package -DskipTests
+          nohup java -jar target/credit-profile-*.jar > credit-profile.log 2>&1 &
+          echo $! > credit-profile.pid
+
+      - name: Start Data Aggregator Service
+        run: |
+          cd data-aggregator
+          mvn clean package -DskipTests
+          nohup java -jar target/data-aggregator-*.jar > data-aggregator.log 2>&1 &
+          echo $! > data-aggregator.pid
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for services to start..."
+          sleep 30
+          
+          # Check Customer Profile
+          for i in {1..30}; do
+            if curl -f http://localhost:5551/actuator/health > /dev/null 2>&1; then
+              echo "✓ Customer Profile is ready"
+              break
+            fi
+            echo "Waiting for Customer Profile... ($i/30)"
+            sleep 2
+          done
+          
+          # Check Credit Profile
+          for i in {1..30}; do
+            if curl -f http://localhost:5552/actuator/health > /dev/null 2>&1; then
+              echo "✓ Credit Profile is ready"
+              break
+            fi
+            echo "Waiting for Credit Profile... ($i/30)"
+            sleep 2
+          done
+          
+          # Check Data Aggregator
+          for i in {1..30}; do
+            if curl -f http://localhost:5555/data-aggregator/actuator/health > /dev/null 2>&1; then
+              echo "✓ Data Aggregator is ready"
+              break
+            fi
+            echo "Waiting for Data Aggregator... ($i/30)"
+            sleep 2
+          done
+
+      - name: Run tests with suite - ${{ steps.suite.outputs.suite }}
+        run: |
+          cd surptech-banking-tester
+          if [ "${{ steps.suite.outputs.suite }}" == "all" ]; then
+            mvn clean test
+          else
+            mvn clean test -P ${{ steps.suite.outputs.suite }}
+          fi
+
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          cd surptech-banking-tester
+          mvn allure:report
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ steps.suite.outputs.suite }}
+          path: |
+            surptech-banking-tester/target/surefire-reports/
+            surptech-banking-tester/target/allure-results/
+            surptech-banking-tester/target/allure-report/
+          retention-days: 30
+
+      - name: Upload Service Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-logs
+          path: |
+            customer-profile.log
+            credit-profile.log
+            data-aggregator.log
+          retention-days: 7
+
+      - name: Publish Test Report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Results - ${{ steps.suite.outputs.suite }}
+          path: surptech-banking-tester/target/surefire-reports/TEST-*.xml
+          reporter: java-junit
+          fail-on-error: true
+
+      - name: Stop services
+        if: always()
+        run: |
+          if [ -f customer-profile.pid ]; then
+            kill $(cat customer-profile.pid) || true
+          fi
+          if [ -f credit-profile.pid ]; then
+            kill $(cat credit-profile.pid) || true
+          fi
+          if [ -f data-aggregator.pid ]; then
+            kill $(cat data-aggregator.pid) || true
+          fi
+
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "## Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Suite:** ${{ steps.suite.outputs.suite }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Java Version:** ${{ matrix.java-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f surptech-banking-tester/target/surefire-reports/TEST-*.xml ]; then
+            echo "Test reports generated successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No test reports found" >> $GITHUB_STEP_SUMMARY
+          fi

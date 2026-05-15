@@ -6,52 +6,7 @@ Automated integration testing suite for the SurpTech Banking System.
 
 This project provides comprehensive integration testing for the SurpTech Banking System, focusing on testing the Data Aggregator gateway service and its interactions with backend services (Customer Profile and Credit Profile).
 
-## Architecture
-
-The tester interacts with the system as shown in the architecture diagram:
-
-```
-Tester → Data Aggregator → [Customer Profile, Credit Profile]
-```
-
-## Project Structure
-
-```
-surptech-banking-tester/
-├── src/test/
-│   ├── java/org/surptech/bankingtester/
-│   │   ├── annotation/          # Custom test annotations (@TestId)
-│   │   ├── base/                # Base test classes
-│   │   ├── client/              # REST clients for services
-│   │   ├── config/              # Test configuration
-│   │   ├── model/               # Data models
-│   │   ├── suite/               # Test suites
-│   │   └── tests/               # Test classes
-│   └── resources/
-│       ├── application.properties  # Test configuration
-│       └── logback-test.xml       # Logging configuration
-├── pom.xml
-└── README.md
-```
-
-## Test Categories
-
-Tests are organized with JUnit 5 tags:
-
-- **`@Tag("smoke")`** - Quick smoke tests for basic functionality
-- **`@Tag("integration")`** - Full integration tests
-- **`@Tag("error-handling")`** - Error scenario tests
-- **`@Tag("health")`** - Service health checks
-
-## Test IDs
-
-Each test has a unique ID using the `@TestId` annotation:
-
-- **TC-001 to TC-099**: Integration tests
-- **TC-101 to TC-199**: Error handling tests
-- **TC-201 to TC-299**: Health check tests
-
-## Running Tests
+## Quick Start
 
 ### Prerequisites
 
@@ -62,89 +17,114 @@ Each test has a unique ID using the `@TestId` annotation:
 
 2. Java 25 and Maven installed
 
-### Run All Tests
+### Run Tests
 
 ```bash
+# Run all tests
 mvn clean test
-```
 
-### Run Specific Test Suites
+# Run specific suite
+mvn clean test -Dtest.suite=smoke
+mvn clean test -Dtest.suite=integration
 
-```bash
-# Smoke tests only
+# Using profiles (alternative)
 mvn clean test -P smoke
 
-# Integration tests only
-mvn clean test -P integration
-
-# Error handling tests only
-mvn clean test -P error-handling
-
-# CI profile (parallel execution)
-mvn clean test -P ci
+# Using shell scripts
+./run-tests.sh smoke              # Linux/Mac
+run-tests.bat smoke               # Windows
 ```
 
-### Run from IntelliJ IDEA
+## Test Suites
 
-1. Open the project in IntelliJ
-2. Navigate to any test class or suite
-3. Right-click and select "Run" or "Debug"
-4. Or use the green play button next to test methods
+| Suite | Command | Description |
+|-------|---------|-------------|
+| **smoke** | `-Dtest.suite=smoke` | Quick smoke tests (~5 tests) |
+| **integration** | `-Dtest.suite=integration` | Full integration tests (~10 tests) |
+| **error-handling** | `-Dtest.suite=error-handling` | Error scenario tests (~8 tests) |
+| **health** | `-Dtest.suite=health` | Service health checks (~3 tests) |
+| **all** | `mvn test` | All tests (default) |
+| **ci** | `-P ci` | CI/CD optimized (parallel) |
 
-### Run Specific Test Class
+## Project Structure
+
+```
+surptech-banking-tester/
+├── src/test/java/org/surptech/bankingtester/
+│   ├── annotation/          # Custom test annotations (@TestId)
+│   ├── base/                # Base test classes
+│   ├── client/              # REST clients for services
+│   ├── config/              # Test configuration
+│   ├── model/               # Data models
+│   ├── suite/               # Test suites
+│   └── tests/               # Test classes
+├── src/test/resources/
+│   ├── application.properties  # Test configuration
+│   └── logback-test.xml       # Logging configuration
+├── pom.xml
+├── README.md
+├── TESTING-GUIDE.md         # Comprehensive testing guide
+└── run-tests.sh/bat         # Test runner scripts
+```
+
+## CI/CD Integration
+
+### GitHub Actions
+
+A workflow is provided in `.github/workflows/run-tests.yml`:
+
+**Automatic Triggers:**
+- Push to `main` or `develop` branches
+- Pull requests
+
+**Manual Trigger:**
+1. Go to Actions tab → "Run Integration Tests"
+2. Select test suite from dropdown
+3. Click "Run workflow"
+
+**Features:**
+- Builds and starts all services automatically
+- Runs selected test suite
+- Generates and uploads test reports as artifacts
+- Reports retained for 30 days
+
+### Other CI/CD Platforms
 
 ```bash
-mvn test -Dtest=CustomerBankingInfoTest
+# Jenkins, GitLab CI, Azure DevOps, etc.
+mvn clean test -Dtest.suite=smoke
 ```
 
-### Run Specific Test Method
-
-```bash
-mvn test -Dtest=CustomerBankingInfoTest#testGetCustomerBankingInfo_ValidSSN_Success
-```
+See [TESTING-GUIDE.md](TESTING-GUIDE.md) for detailed CI/CD examples.
 
 ## Test Reports
 
-### Console Output
-
-Tests provide detailed console output with:
-- Test execution progress
-- Test IDs and names
-- Detailed logging of requests/responses
-- Summary of passed/failed tests
-
-### HTML Reports
-
-After running tests, HTML reports are generated in:
-
-```
-target/surefire-reports/
-├── index.html                    # Main report index
-├── TEST-*.xml                    # JUnit XML reports
-└── org.surptech.bankingtester.tests.*.txt  # Text reports
-```
-
-To view the HTML report:
+### Local Development
 
 ```bash
-# Generate the site report
-mvn surefire-report:report
+# View Allure report (recommended)
+mvn allure:serve
 
-# Open target/site/surefire-report.html in a browser
+# Or generate static report
+mvn allure:report
+open target/allure-report/index.html
 ```
 
-### CI/CD Integration
+### GitHub Actions
 
-The test reports are in standard JUnit XML format, compatible with:
-- Jenkins
-- GitLab CI
-- GitHub Actions
-- Azure DevOps
-- Any CI/CD tool supporting JUnit reports
+Reports are uploaded as workflow artifacts:
+1. Go to Actions tab → workflow run
+2. Download artifacts from "Artifacts" section
+3. Extract and open `allure-report/index.html`
+
+**Important:** Reports are NOT committed to the repository. They are:
+- Generated in `target/` directory (excluded by `.gitignore`)
+- Uploaded as artifacts in CI/CD systems
+- Automatically cleaned by `mvn clean`
 
 ## Configuration
 
-Edit `src/test/resources/application.properties` to configure:
+Edit `src/test/resources/application.properties`:
 
 ```properties
 # Service URLs
@@ -160,72 +140,37 @@ test.expected.lastName=Smith
 test.expected.address=456 Tailor Street, California, LA 56001
 ```
 
-## Test Data
-
-### Valid Test Case
-- **SSN**: 123-45-6789
-- **Expected Customer**:
-  - First Name: James
-  - Last Name: Smith
-  - Address: 456 Tailor Street, California, LA 56001
-
-### Invalid Test Cases
-- Invalid SSN: 999-99-9999
-- Null SSN
-- Empty SSN
-- Malformed SSN
-
-## Technologies Used
+## Technologies
 
 - **JUnit 5** - Testing framework
 - **REST Assured** - REST API testing
-- **Lombok** - Reduce boilerplate code
+- **Allure** - Test reporting
+- **Lombok** - Reduce boilerplate
 - **Jackson** - JSON processing
 - **SLF4J + Logback** - Logging
-- **Maven Surefire** - Test execution and reporting
+- **Maven Surefire** - Test execution
 
-## Adding New Tests
+## Documentation
 
-1. Create a new test class in `src/test/java/org/surptech/bankingtester/tests/`
-2. Extend `BaseTest`
-3. Add `@TestId` annotation with unique ID
-4. Add appropriate `@Tag` annotations
-5. Add `@DisplayName` for readable test names
-6. Implement test logic using REST Assured
-
-Example:
-
-```java
-@Test
-@TestId("TC-005")
-@Tag("integration")
-@DisplayName("TC-005: Test description")
-public void testSomething() {
-    // Arrange
-    // Act
-    // Assert
-}
-```
+- **[TESTING-GUIDE.md](TESTING-GUIDE.md)** - Comprehensive testing guide with CI/CD examples
+- **[README.md](README.md)** - This file (quick start)
 
 ## Troubleshooting
 
 ### Services Not Available
 
-If tests fail with connection errors:
-1. Verify all services are running
-2. Check service URLs in `application.properties`
-3. Verify ports are not blocked by firewall
+```bash
+# Check if services are running
+curl http://localhost:5551/actuator/health
+curl http://localhost:5552/actuator/health
+curl http://localhost:5555/data-aggregator/actuator/health
+```
 
-### Test Failures
+### Clean Build
 
-1. Check the console output for detailed error messages
-2. Review the HTML report in `target/site/surefire-report.html`
-3. Check logs in `target/test-logs/test-execution.log`
+```bash
+# Clean and rebuild
+mvn clean test
+```
 
-## Future Enhancements
-
-- Add authentication/authorization tests
-- Add performance/load testing
-- Add data-driven tests with multiple test data sets
-- Add API contract testing
-- Add test data management utilities
+For more help, see [TESTING-GUIDE.md](TESTING-GUIDE.md).

@@ -35,11 +35,23 @@ build/
 # Logs
 *.log
 logs/
+test-logs/
 
-# Test Reports
+# Test Reports (Maven Surefire)
 test-output/
+surefire-reports/
+failsafe-reports/
 *.html
 *.xml
+
+# Allure Reports
+allure-results/
+allure-report/
+.allure/
+
+# Test Artifacts
+*.har
+*.json.log
 
 # OS
 .DS_Store
@@ -50,3 +62,6 @@ Thumbs.db
 *.bak
 *.swp
 *~
+
+# Process ID files (from service startup)
+*.pid
