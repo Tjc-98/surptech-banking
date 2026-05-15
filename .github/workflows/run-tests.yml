@@ -54,13 +54,6 @@ jobs:
           mvn clean package -DskipTests
           nohup java -jar target/customer-profile-*.jar > customer-profile.log 2>&1 &
           echo $! > customer-profile.pid
-          
-      - name: Start Credit Profile Service
-        run: |
-          cd credit-profile
-          mvn clean package -DskipTests
-          nohup java -jar target/credit-profile-*.jar > credit-profile.log 2>&1 &
-          echo $! > credit-profile.pid
 
       - name: Start Data Aggregator Service
         run: |
@@ -81,16 +74,6 @@ jobs:
               break
             fi
             echo "Waiting for Customer Profile... ($i/30)"
-            sleep 2
-          done
-          
-          # Check Credit Profile
-          for i in {1..30}; do
-            if curl -f http://localhost:5552/actuator/health > /dev/null 2>&1; then
-              echo "✓ Credit Profile is ready"
-              break
-            fi
-            echo "Waiting for Credit Profile... ($i/30)"
             sleep 2
           done
           
@@ -140,7 +123,6 @@ jobs:
           name: service-logs
           path: |
             customer-profile.log
-            credit-profile.log
             data-aggregator.log
           retention-days: 7
 
@@ -158,9 +140,6 @@ jobs:
         run: |
           if [ -f customer-profile.pid ]; then
             kill $(cat customer-profile.pid) || true
-          fi
-          if [ -f credit-profile.pid ]; then
-            kill $(cat credit-profile.pid) || true
           fi
           if [ -f data-aggregator.pid ]; then
             kill $(cat data-aggregator.pid) || true
