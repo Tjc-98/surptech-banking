@@ -63,7 +63,7 @@ public class GetCustomerCreditInfoProcedure extends BaseProcedure<String, Custom
         if (creditProfile.isPresent()) {
             CreditProfileEntity creditProfileEntity = creditProfile.get();
             customerCreditInfoEntityBuilder = customerCreditInfoEntityBuilder
-                   .currentBalance(creditProfileEntity.getCurrentBalance())
+                   .fullCreditBalance(creditProfileEntity.getFullCreditBalance())
                    .spendBalance(creditProfileEntity.getSpendBalance())
                    .interestRate(creditProfileEntity.getInterestRate());
         }

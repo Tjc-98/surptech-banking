@@ -24,9 +24,12 @@ public class CreditProfileClient {
         try {
             log.info("Fetching credit profile for SSN: {}", socialSecurityNumber);
             
-            // Call external service and get DTO response
+            // Call external service with GET and query parameter
             CreditProfileResponse response = creditProfileRestClient.get()
-                    .uri("/credit/get/{socialSecurityNumber}", socialSecurityNumber)
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/credit-profile/credit/get")
+                            .queryParam("socialSecurityNumber", socialSecurityNumber)
+                            .build())
                     .retrieve()
                     .body(CreditProfileResponse.class);
 

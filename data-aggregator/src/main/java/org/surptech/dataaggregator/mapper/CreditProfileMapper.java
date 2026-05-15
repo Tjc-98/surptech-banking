@@ -18,7 +18,7 @@ public class CreditProfileMapper {
         
         return CreditProfileEntity.builder()
                 .socialSecurityNumber(response.getSocialSecurityNumber())
-                .currentBalance(response.getCurrentBalance())
+                .fullCreditBalance(response.getFullCreditBalance())
                 .spendBalance(response.getSpendBalance())
                 .interestRate(response.getInterestRate())
                 .build();

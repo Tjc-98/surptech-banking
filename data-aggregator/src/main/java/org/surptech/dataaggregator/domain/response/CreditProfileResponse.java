@@ -17,8 +17,8 @@ public class CreditProfileResponse {
     @JsonProperty("social_security_number")
     private String socialSecurityNumber;
 
-    @JsonProperty("current_balance")
-    private Double currentBalance;
+    @JsonProperty("full_credit_balance")
+    private Double fullCreditBalance;
 
     @JsonProperty("spend_balance")
     private Double spendBalance;

@@ -141,7 +141,7 @@ public class GetCustomerBankingInfoTestStep extends TestStep<GetCustomerBankingI
             // Verify credit profile if requested
             if (verifyCreditProfile) {
                 assertNotNull(bankingInfo, "Banking info should not be null for credit verification");
-                assertNotNull(bankingInfo.getCurrentBalance(), "Current balance should not be null");
+                assertNotNull(bankingInfo.getFullCreditBalance(), "Full credit balance should not be null");
                 assertNotNull(bankingInfo.getSpendBalance(), "Spend balance should not be null");
                 assertNotNull(bankingInfo.getInterestRate(), "Interest rate should not be null");
             }

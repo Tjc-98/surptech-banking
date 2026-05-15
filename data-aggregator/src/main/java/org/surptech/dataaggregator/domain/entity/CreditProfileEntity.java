@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class CreditProfileEntity {
 
     private String socialSecurityNumber;
-    private Double currentBalance;
+    private Double fullCreditBalance;
     private Double spendBalance;
     private Double interestRate;
 }

@@ -21,7 +21,7 @@ public class CustomerCreditInfoMapper {
                 .firstName(entity.getFirstName())
                 .lastName(entity.getLastName())
                 .address(entity.getAddress())
-                .currentBalance(entity.getCurrentBalance())
+                .fullCreditBalance(entity.getFullCreditBalance())
                 .spendBalance(entity.getSpendBalance())
                 .interestRate(entity.getInterestRate())
                 .build();

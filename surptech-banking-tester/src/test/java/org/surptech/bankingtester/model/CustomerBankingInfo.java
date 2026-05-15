@@ -27,8 +27,8 @@ public class CustomerBankingInfo {
     @JsonProperty("address")
     private String address;
     
-    @JsonProperty("current_balance")
-    private Double currentBalance;
+    @JsonProperty("full_credit_balance")
+    private Double fullCreditBalance;
     
     @JsonProperty("spend_balance")
     private Double spendBalance;

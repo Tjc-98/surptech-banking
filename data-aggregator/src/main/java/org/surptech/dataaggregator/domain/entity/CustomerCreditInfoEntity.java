@@ -20,7 +20,7 @@ public class CustomerCreditInfoEntity {
     private String firstName;
     private String lastName;
     private String address;
-    private Double currentBalance;
+    private Double fullCreditBalance;
     private Double spendBalance;
     private Double interestRate;
 }

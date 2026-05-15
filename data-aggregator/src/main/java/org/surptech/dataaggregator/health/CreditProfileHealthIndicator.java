@@ -20,7 +20,7 @@ public class CreditProfileHealthIndicator {
             log.debug("Checking credit-profile service health...");
             
             String response = creditProfileRestClient.get()
-                    .uri("/management/health")
+                    .uri("/credit-profile/management/health")
                     .retrieve()
                     .body(String.class);
 
@@ -32,7 +32,7 @@ public class CreditProfileHealthIndicator {
                 return false;
             }
         } catch (Exception exception) {
-            log.warn("Credit-profile service is DOWN (not yet implemented): {}", exception.getMessage());
+            log.error("Credit-profile service is DOWN: {}", exception.getMessage());
             return false;
         }
     }
