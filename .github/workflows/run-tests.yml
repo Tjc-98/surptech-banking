@@ -58,6 +58,13 @@ jobs:
           nohup java -jar target/customer-profile-*.jar > ../customer-profile.log 2>&1 &
           echo $! > ../customer-profile.pid
 
+      - name: Start Credit Profile Service
+        working-directory: ./credit-profile
+        run: |
+          mvn clean package -DskipTests -B
+          nohup java -jar target/credit-profile-*.jar > ../credit-profile.log 2>&1 &
+          echo $! > ../credit-profile.pid
+
       - name: Start Data Aggregator Service
         working-directory: ./data-aggregator
         run: |
@@ -72,7 +79,7 @@ jobs:
           
           # Check Customer Profile
           for i in {1..30}; do
-            if curl -f http://localhost:5551/actuator/health > /dev/null 2>&1; then
+            if curl -f http://localhost:5551/customer-profile/management/health > /dev/null 2>&1; then
               echo "✓ Customer Profile is ready"
               break
             fi
@@ -80,9 +87,19 @@ jobs:
             sleep 2
           done
           
+          # Check Credit Profile
+          for i in {1..30}; do
+            if curl -f http://localhost:5552/credit-profile/management/health > /dev/null 2>&1; then
+              echo "✓ Credit Profile is ready"
+              break
+            fi
+            echo "Waiting for Credit Profile... ($i/30)"
+            sleep 2
+          done
+          
           # Check Data Aggregator
           for i in {1..30}; do
-            if curl -f http://localhost:5555/data-aggregator/actuator/health > /dev/null 2>&1; then
+            if curl -f http://localhost:5555/data-aggregator/management/health > /dev/null 2>&1; then
               echo "✓ Data Aggregator is ready"
               break
             fi
@@ -125,6 +142,7 @@ jobs:
           name: service-logs
           path: |
             customer-profile.log
+            credit-profile.log
             data-aggregator.log
           retention-days: 7
 
@@ -143,6 +161,9 @@ jobs:
         run: |
           if [ -f customer-profile.pid ]; then
             kill $(cat customer-profile.pid) || true
+          fi
+          if [ -f credit-profile.pid ]; then
+            kill $(cat credit-profile.pid) || true
           fi
           if [ -f data-aggregator.pid ]; then
             kill $(cat data-aggregator.pid) || true
