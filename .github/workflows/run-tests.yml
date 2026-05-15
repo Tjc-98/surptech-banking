@@ -45,19 +45,19 @@ jobs:
 
       - name: Build common library
         working-directory: ./surptech-common
-        run: mvn clean install -DskipTests
+        run: mvn clean install -DskipTests -B -q
         
       - name: Start Customer Profile Service
         working-directory: ./customer-profile
         run: |
-          mvn clean package -DskipTests
+          mvn clean package -DskipTests -B -q
           nohup java -jar target/customer-profile-*.jar > ../customer-profile.log 2>&1 &
           echo $! > ../customer-profile.pid
 
       - name: Start Data Aggregator Service
         working-directory: ./data-aggregator
         run: |
-          mvn clean package -DskipTests
+          mvn clean package -DskipTests -B -q
           nohup java -jar target/data-aggregator-*.jar > ../data-aggregator.log 2>&1 &
           echo $! > ../data-aggregator.pid
 
@@ -93,15 +93,15 @@ jobs:
           echo "Executing: ${{ steps.suite.outputs.suite }} test suite"
           echo "=========================================="
           if [ "${{ steps.suite.outputs.suite }}" == "all" ]; then
-            mvn clean test
+            mvn clean test -B
           else
-            mvn clean test -P ${{ steps.suite.outputs.suite }}
+            mvn clean test -P ${{ steps.suite.outputs.suite }} -B
           fi
 
       - name: Generate Allure Report
         if: always()
         working-directory: ./surptech-banking-tester
-        run: mvn allure:report
+        run: mvn allure:report -B -q
 
       - name: Upload Test Results
         if: always()
