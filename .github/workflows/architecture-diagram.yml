@@ -37,6 +37,9 @@ jobs:
           mmdc -i wiki/architecture/architecture-diagram.mmd \
                -o wiki/architecture/architecture-diagram.png \
                -b white \
+               -s 3 \
+               -w 3840 \
+               -H 2160 \
                -p /tmp/puppeteer-config.json
           echo "Image created."
 
