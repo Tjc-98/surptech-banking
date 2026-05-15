@@ -13,7 +13,7 @@
         </encoder>
     </appender>
     
-    <appender name="ALLURE" class="org.surptech.bankingtester.listener.AllureLogAppender">
+    <appender name="ALLURE" class="org.surptech.common.tester.listener.AllureLogAppender">
     </appender>
 
     <root level="INFO">

@@ -1,6 +1,7 @@
 package org.surptech.common.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,26 +19,17 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("timestamp")
     private LocalDateTime timestamp;
-
-    @JsonProperty("status")
     private int status;
-
-    @JsonProperty("error")
     private String error;
-
-    @JsonProperty("message")
     private String message;
-
-    @JsonProperty("path")
     private String path;
-
-    @JsonProperty("errors")
     private List<String> errors;
 
     /**

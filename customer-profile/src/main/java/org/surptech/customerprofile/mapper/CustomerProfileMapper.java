@@ -5,22 +5,24 @@ import org.surptech.customerprofile.domain.response.CustomerProfileResponse;
 import org.surptech.customerprofile.domain.entity.CustomerProfileEntity;
 
 /**
- * Mapper to convert between DTOs and internal entities for customer profile operations.
+ * Mapper for converting between different representations of customer profile data.
+ * Provides one-way conversion methods:
+ * - {@link #toEntity(CustomerProfileRequest)} converts incoming request DTOs to internal entities
+ * - {@link #toResponse(CustomerProfileEntity)} converts internal entities to outgoing response DTOs
  *
- * This mapper provides one-way conversion methods:
- * - CustomerProfileRequest (DTO) -> CustomerProfileEntity (internal)
- * - CustomerProfileEntity (internal) -> CustomerProfileResponse (DTO)
+ * This mapper separates API contracts (DTOs) from internal domain models (entities).
+ * Null-safe: returns null if input is null.
  */
 public class CustomerProfileMapper {
 
     private CustomerProfileMapper() {
-        // Utility class - should not be instantiated
+        // Utility class - prevent instantiation
     }
 
     /**
-     * Converts a CustomerProfileRequest DTO to an internal CustomerProfileEntity.
+     * Converts a customer profile request DTO to an internal entity for persistence operations.
      *
-     * @param request the request DTO to convert
+     * @param request the incoming request DTO to convert
      * @return the converted entity, or null if the request is null
      */
     public static CustomerProfileEntity toEntity(CustomerProfileRequest request) {
@@ -37,9 +39,9 @@ public class CustomerProfileMapper {
     }
 
     /**
-     * Converts a CustomerProfileEntity to a CustomerProfileResponse DTO.
+     * Converts an internal entity to a customer profile response DTO for API responses.
      *
-     * @param entity the entity to convert
+     * @param entity the internal entity to convert
      * @return the converted response DTO, or null if the entity is null
      */
     public static CustomerProfileResponse toResponse(CustomerProfileEntity entity) {

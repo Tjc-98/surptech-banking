@@ -6,14 +6,13 @@ import org.surptech.bankingtester.client.DataAggregatorClient;
 import org.surptech.bankingtester.config.TestConfiguration;
 import org.surptech.bankingtester.teststep.DataAggregatorHealthTestStep;
 import org.surptech.bankingtester.teststep.GetCustomerBankingInfoTestStep;
-import org.surptech.bankingtester.teststep.TestStep;
 
 /**
  * Base test class providing common clients, configuration, and utilities.
- * Extend TestLifecycleManager for test lifecycle management and logging.
+ * Extends common tester BaseTest for test lifecycle management and logging.
  */
 @Slf4j
-public abstract class BaseTest extends TestLifecycleManager {
+public abstract class BaseTest extends org.surptech.common.tester.base.BaseTest {
     
     protected static TestConfiguration config;
     protected static DataAggregatorClient dataAggregatorClient;
@@ -57,4 +56,3 @@ public abstract class BaseTest extends TestLifecycleManager {
         return step;
     }
 }
-

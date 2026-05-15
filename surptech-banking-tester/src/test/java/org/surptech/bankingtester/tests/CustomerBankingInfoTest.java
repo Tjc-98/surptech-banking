@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.surptech.bankingtester.annotation.TestId;
+import org.surptech.common.tester.annotation.TestId;
 import org.surptech.bankingtester.base.BaseTest;
 
 /**

@@ -68,13 +68,14 @@ public class LoggingUtils {
     }
 
     /**
-     * Deprecated: Use {@link #logObjectAtDebugLevel(String, Object)} instead.
-     * This method name is less clear about the logging level used.
+     * Logs an object as JSON at DEBUG level (alternative method name).
+     * Deprecated in favor of {@link #logObjectAtDebugLevel(String, Object)} for clarity.
      *
      * @param message log message prefix
      * @param object object to log as JSON
+     * @deprecated Use {@link #logObjectAtDebugLevel(String, Object)} instead. Will be removed in v2.0.
      */
-    @Deprecated(since = "1.0.1", forRemoval = false)
+    @Deprecated(since = "1.0.1", forRemoval = true)
     public static void logObjectDebug(String message, Object object) {
         logObjectAtDebugLevel(message, object);
     }

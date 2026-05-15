@@ -1,10 +1,10 @@
 package org.surptech.dataaggregator.procedure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.surptech.common.config.ApplicationContextProvider;
 import org.surptech.common.procedure.BaseProcedure;
 import org.surptech.dataaggregator.client.CreditProfileClient;
 import org.surptech.dataaggregator.client.CustomerProfileClient;
-import org.surptech.dataaggregator.config.ApplicationContextProvider;
 import org.surptech.dataaggregator.domain.response.CustomerCreditInfoResponse;
 import org.surptech.dataaggregator.domain.entity.CreditProfileEntity;
 import org.surptech.dataaggregator.domain.entity.CustomerCreditInfoEntity;
@@ -21,10 +21,8 @@ public class GetCustomerCreditInfoProcedure extends BaseProcedure<String, Custom
 
     public GetCustomerCreditInfoProcedure(String socialSecurityNumber) {
         super(socialSecurityNumber);
-        this.customerProfileClient = ApplicationContextProvider.getApplicationContext()
-                .getBean(CustomerProfileClient.class);
-        this.creditProfileClient = ApplicationContextProvider.getApplicationContext()
-                .getBean(CreditProfileClient.class);
+        this.customerProfileClient = ApplicationContextProvider.getBean(CustomerProfileClient.class);
+        this.creditProfileClient = ApplicationContextProvider.getBean(CreditProfileClient.class);
     }
 
     @Override

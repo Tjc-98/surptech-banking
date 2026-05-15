@@ -12,8 +12,13 @@ flowchart TD
 
     subgraph Client["Client Layer"]
         direction LR
-        Tester["Integration Tests\n(surptech-banking-tester)\nREST Assured + JUnit\n---\nTest Suites:\n• Smoke Tests\n• Integration Tests\n• Error Handling Tests\n• Health Check Tests"]
+        BankingTester["Banking Integration Tests\n(surptech-banking-tester)\nREST Assured + JUnit\n---\nTests Data Aggregator\nTest Suites:\n• Smoke Tests\n• Integration Tests\n• Error Handling Tests\n• Health Check Tests"]
         Webpage["Web Application\n(Future Implementation)"]
+    end
+
+    subgraph Integration["Integration Layer"]
+        direction LR
+        CustomerTester["Customer Profile Tests\n(customer-profile-tester)\nREST Assured + JUnit\n---\nTests Customer Profile Service\nTest Suites:\n• Smoke Tests\n• Integration Tests\n• Error Handling Tests\n• Health Check Tests"]
     end
 
     subgraph ServiceLayer["Service Layer"]
@@ -38,16 +43,22 @@ flowchart TD
     subgraph SharedLib["Shared Library"]
         direction TB
         Common["surptech-common\n---\nBase classes, utilities,\nvalidation, exception handling"]
+        CommonTester["surptech-common-tester\n---\nBase test classes, test steps,\ntest configuration, listeners"]
     end
 
-    %% Client to Service Layer
-    Tester -- "GET /banking/get?ssn=XXX" --> DataAggregator
+    %% Client Layer to Service Layer
+    BankingTester -- "GET /banking/get?ssn=XXX" --> DataAggregator
     Webpage -. "Future: API calls" .-> DataAggregator
-    Tester -. "Future: Authentication" .-> AuthServer
+    BankingTester -. "Future: Authentication" .-> AuthServer
+    
+    %% Integration Layer to Data Layer
+    CustomerTester -- "GET /customer/get?ssn=XXX\nPOST /customer/create" --> CustomerProfile
     
     %% Layer connections
     Legend ~~~ Client
+    Legend ~~~ Integration
     Client --> ServiceLayer
+    Integration --> DataLayer
 
     %% Service Layer interactions
     DataAggregator -- "GET /customer-profile/customer/get\n?socialSecurityNumber=XXX" --> CustomerProfile
@@ -74,6 +85,8 @@ flowchart TD
     DataAggregator ~~~ Common
     CustomerProfile ~~~ Common
     CreditProfile ~~~ Common
+    BankingTester ~~~ CommonTester
+    CustomerTester ~~~ CommonTester
 
     %% Styling
     classDef implemented fill:#90EE90,stroke:#006400,stroke-width:2px,color:#000000
@@ -81,7 +94,7 @@ flowchart TD
     classDef database fill:#87CEEB,stroke:#00008B,stroke-width:2px,color:#000000
     classDef library fill:#FFE4B5,stroke:#8B4513,stroke-width:2px,color:#000000
 
-    class DataAggregator,CustomerProfile,CreditProfile,Tester,LegendImplemented implemented
+    class DataAggregator,CustomerProfile,CreditProfile,BankingTester,CustomerTester,LegendImplemented implemented
     class AuthServer,Webpage,LegendNotImplemented notImplemented
     class CustomerDB,CreditDB,LegendDatabase database
-    class Common,LegendLibrary library
+    class Common,CommonTester,LegendLibrary library

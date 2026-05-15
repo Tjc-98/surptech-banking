@@ -50,6 +50,10 @@ jobs:
       - name: Build common library
         working-directory: ./surptech-common
         run: mvn clean install -DskipTests -B
+      
+      - name: Build common tester library
+        working-directory: ./surptech-common-tester
+        run: mvn clean install -DskipTests -B
         
       - name: Start Customer Profile Service
         working-directory: ./customer-profile

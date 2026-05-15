@@ -5,22 +5,24 @@ import org.surptech.creditprofile.domain.response.CreditProfileResponse;
 import org.surptech.creditprofile.domain.entity.CreditProfileEntity;
 
 /**
- * Mapper to convert between DTOs and internal entities for credit profile operations.
+ * Mapper for converting between different representations of credit profile data.
+ * Provides one-way conversion methods:
+ * - {@link #toEntity(CreditProfileRequest)} converts incoming request DTOs to internal entities
+ * - {@link #toResponse(CreditProfileEntity)} converts internal entities to outgoing response DTOs
  *
- * This mapper provides one-way conversion methods:
- * - CreditProfileRequest (DTO) -> CreditProfileEntity (internal)
- * - CreditProfileEntity (internal) -> CreditProfileResponse (DTO)
+ * This mapper separates API contracts (DTOs) from internal domain models (entities).
+ * Null-safe: returns null if input is null.
  */
 public class CreditProfileMapper {
 
     private CreditProfileMapper() {
-        // Utility class - should not be instantiated
+        // Utility class - prevent instantiation
     }
 
     /**
-     * Converts a CreditProfileRequest DTO to an internal CreditProfileEntity.
+     * Converts a credit profile request DTO to an internal entity for persistence operations.
      *
-     * @param request the request DTO to convert
+     * @param request the incoming request DTO to convert
      * @return the converted entity, or null if the request is null
      */
     public static CreditProfileEntity toEntity(CreditProfileRequest request) {
@@ -37,9 +39,9 @@ public class CreditProfileMapper {
     }
 
     /**
-     * Converts a CreditProfileEntity to a CreditProfileResponse DTO.
+     * Converts an internal entity to a credit profile response DTO for API responses.
      *
-     * @param entity the entity to convert
+     * @param entity the internal entity to convert
      * @return the converted response DTO, or null if the entity is null
      */
     public static CreditProfileResponse toResponse(CreditProfileEntity entity) {

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * Base class for all response DTOs.
- * Provides common fields like timestamp and ensures consistent response structure.
+ * Provides common timestamp field and ensures consistent response structure across all services.
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,6 +18,7 @@ public abstract class BaseResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /** Response timestamp using system default zone */
     private LocalDateTime timestamp;
 
     /**

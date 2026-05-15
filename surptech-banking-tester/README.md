@@ -6,16 +6,24 @@ Automated integration testing suite for the SurpTech Banking System.
 
 This project provides comprehensive integration testing for the SurpTech Banking System, focusing on testing the Data Aggregator gateway service and its interactions with backend services (Customer Profile and Credit Profile).
 
+**Built with:** [surptech-common-tester](../surptech-common-tester) - Shared testing utilities and base classes
+
 ## Quick Start
 
 ### Prerequisites
 
-1. Ensure all services are running:
+1. Build the common tester library:
+   ```bash
+   cd ../surptech-common-tester
+   mvn clean install
+   ```
+
+2. Ensure all services are running:
    - Data Aggregator (port 5555, context path /data-aggregator)
    - Customer Profile (port 5551)
    - Credit Profile (port 5552)
 
-2. Java 25 and Maven installed
+3. Java 25 and Maven installed
 
 ### Run Tests
 
@@ -146,6 +154,7 @@ test.expected.address=456 Tailor Street, California, LA 56001
 - **Jackson** - JSON processing
 - **SLF4J + Logback** - Logging
 - **Maven Surefire** - Test execution
+- **SurpTech Common Tester** - Shared testing utilities
 
 ## Documentation
 
@@ -167,6 +176,16 @@ curl http://localhost:5555/data-aggregator/actuator/health
 
 ```bash
 # Clean and rebuild
+mvn clean test
+```
+
+### Common Tester Dependency Not Found
+
+```bash
+# Build common tester first
+cd ../surptech-common-tester
+mvn clean install
+cd ../surptech-banking-tester
 mvn clean test
 ```
 

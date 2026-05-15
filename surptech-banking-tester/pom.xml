@@ -20,6 +20,7 @@
         <test.suite>smoke,integration,error-handling</test.suite>
         
         <!-- Dependency Versions -->
+        <surptech-common-tester.version>1.0.0-SNAPSHOT</surptech-common-tester.version>
         <junit.version>6.0.3</junit.version>
         <junit-platform.version>6.0.3</junit-platform.version>
         <rest-assured.version>5.5.0</rest-assured.version>
@@ -37,6 +38,14 @@
     </properties>
 
     <dependencies>
+        <!-- SurpTech Common Tester -->
+        <dependency>
+            <groupId>org.surptech</groupId>
+            <artifactId>surptech-common-tester</artifactId>
+            <version>${surptech-common-tester.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
         <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

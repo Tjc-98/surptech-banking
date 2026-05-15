@@ -8,18 +8,21 @@ import java.util.regex.Pattern;
 
 /**
  * Utility class for common validation operations.
- * Provides reusable validation methods for various data types.
+ * Provides reusable validation methods for various data types and formats.
  *
- * Note: Email validation uses a simplified regex pattern. For production systems,
- * consider using Apache Commons EmailValidator or similar libraries for RFC 5322 compliance.
+ * All methods throw {@link ValidationException} on failure with descriptive messages.
+ * Supports batch validation via {@link #validateAll(Runnable...)} to collect multiple errors.
+ *
+ * Note: Email validation uses a simplified regex pattern. For production systems requiring
+ * strict RFC 5322 compliance, consider using dedicated email validation libraries like
+ * Apache Commons EmailValidator or javax.mail.internet.InternetAddress.
  */
 public class ValidationUtils {
 
-    // SSN Pattern: USA format (XXX-XX-XXXX)
+    /** SSN Pattern: USA format (XXX-XX-XXXX) */
     private static final Pattern SSN_PATTERN_USA = Pattern.compile("^\\d{3}-\\d{2}-\\d{4}$");
 
-    // Email pattern: Supports common email formats including subdomains
-    // Pattern includes: local-part@domain.co.uk, user.name@example.com, etc.
+    /** Email pattern: Supports common email formats with local and domain parts including subdomains */
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9][A-Za-z0-9+._%-]*@[A-Za-z0-9][A-Za-z0-9.-]*\\.[A-Za-z]{2,}$");
 
@@ -28,11 +31,11 @@ public class ValidationUtils {
     }
 
     /**
-     * Validates that a string is not null or empty.
+     * Validates that a string is not null or empty (after trimming whitespace).
      *
      * @param value the value to validate
      * @param fieldName the field name for error messages
-     * @throws ValidationException if validation fails
+     * @throws ValidationException if the value is null or empty
      */
     public static void validateNotEmpty(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
@@ -45,7 +48,7 @@ public class ValidationUtils {
      *
      * @param value the value to validate
      * @param fieldName the field name for error messages
-     * @throws ValidationException if validation fails
+     * @throws ValidationException if the value is null
      */
     public static void validateNotNull(Object value, String fieldName) {
         if (value == null) {
@@ -55,7 +58,7 @@ public class ValidationUtils {
 
     /**
      * Validates a Social Security Number in USA format (XXX-XX-XXXX).
-     * This method validates USA SSN format only.
+     * This is a convenience method that delegates to {@link #validateSocialSecurityNumber(String, String)}.
      *
      * @param socialSecurityNumber the SSN to validate
      * @throws ValidationException if validation fails
@@ -66,10 +69,10 @@ public class ValidationUtils {
 
     /**
      * Validates a Social Security Number for a specific region/country.
-     * Currently supports USA format (XXX-XX-XXXX).
+     * Currently supports USA format (XXX-XX-XXXX). Other regions will raise an exception.
      *
      * @param socialSecurityNumber the SSN to validate
-     * @param region the region or country code (e.g., "USA")
+     * @param region the region or country code (case-insensitive, e.g., "USA")
      * @throws ValidationException if validation fails or region is not supported
      */
     public static void validateSocialSecurityNumber(String socialSecurityNumber, String region) {
@@ -87,8 +90,8 @@ public class ValidationUtils {
 
     /**
      * Validates an email address format.
-     * Note: This uses a simplified regex pattern. The pattern supports common formats but
-     * may not fully comply with RFC 5322. For strict compliance, use a dedicated email validator.
+     * Uses a simplified regex pattern that supports common email formats but may not
+     * fully comply with RFC 5322.
      *
      * @param email the email to validate
      * @throws ValidationException if validation fails
@@ -102,11 +105,11 @@ public class ValidationUtils {
     }
 
     /**
-     * Validates that a number is positive (greater than 0).
+     * Validates that a number is strictly positive (greater than 0).
      *
      * @param value the value to validate
      * @param fieldName the field name for error messages
-     * @throws ValidationException if validation fails
+     * @throws ValidationException if the value is null or not positive
      */
     public static void validatePositive(Number value, String fieldName) {
         validateNotNull(value, fieldName);
@@ -121,7 +124,7 @@ public class ValidationUtils {
      *
      * @param value the value to validate
      * @param fieldName the field name for error messages
-     * @throws ValidationException if validation fails
+     * @throws ValidationException if the value is null or negative
      */
     public static void validateNonNegative(Number value, String fieldName) {
         validateNotNull(value, fieldName);
@@ -132,13 +135,13 @@ public class ValidationUtils {
     }
 
     /**
-     * Validates string length.
+     * Validates string length within specified bounds (inclusive).
      *
      * @param value the value to validate
      * @param fieldName the field name for error messages
      * @param minimumLength minimum length (inclusive)
      * @param maximumLength maximum length (inclusive)
-     * @throws ValidationException if validation fails
+     * @throws ValidationException if the value is empty or length is out of bounds
      */
     public static void validateLength(String value, String fieldName, int minimumLength, int maximumLength) {
         validateNotEmpty(value, fieldName);
@@ -154,9 +157,10 @@ public class ValidationUtils {
 
     /**
      * Collects multiple validation errors and throws a single ValidationException if any validation fails.
-     * This allows validation of multiple fields before throwing an exception.
+     * This allows validation of multiple fields before throwing an exception, providing comprehensive
+     * error feedback to the caller.
      *
-     * @param validations list of validation runnables to execute
+     * @param validations variable number of validation runnables to execute
      * @throws ValidationException if any validation fails, containing all accumulated errors
      */
     public static void validateAll(Runnable... validations) {

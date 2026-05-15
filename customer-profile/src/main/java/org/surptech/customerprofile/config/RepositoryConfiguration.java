@@ -30,6 +30,9 @@ public class RepositoryConfiguration {
     /**
      * Creates and configures the CustomerProfileRepository bean based on the configured database type.
      *
+     * The repository implementation is selected based on the 'database.type' property.
+     * This allows for easy switching between different database implementations without code changes.
+     *
      * @param jdbcTemplate the JdbcTemplate instance to be injected into the repository
      * @return the appropriate CustomerProfileRepository implementation for the configured database type
      * @throws IllegalArgumentException if the configured database type is not supported
@@ -38,7 +41,7 @@ public class RepositoryConfiguration {
     public CustomerProfileRepository customerProfileRepository(JdbcTemplate jdbcTemplate) {
         log.info("Configuring CustomerProfileRepository with database type: {}", databaseType);
 
-        CustomerProfileRepository repository = switch (databaseType.toLowerCase()) {
+        return switch (databaseType.toLowerCase()) {
             case "sqlite" -> {
                 log.debug("Initializing SqliteCustomerProfileRepository");
                 yield new SqliteCustomerProfileRepository(jdbcTemplate);
@@ -46,15 +49,9 @@ public class RepositoryConfiguration {
             // Future database implementations can be added here:
             // case "postgresql" -> new PostgresqlCustomerProfileRepository(jdbcTemplate);
             // case "mysql" -> new MysqlCustomerProfileRepository(jdbcTemplate);
-            default -> {
-                log.error("Unsupported database type: {}. Supported types: sqlite", databaseType);
-                throw new IllegalArgumentException(
-                    "Unsupported database type: " + databaseType + ". Supported types: sqlite"
-                );
-            }
+            default -> throw new IllegalArgumentException(
+                String.format("Unsupported database type: '%s'. Supported types: sqlite", databaseType)
+            );
         };
-
-        log.info("CustomerProfileRepository configured successfully");
-        return repository;
     }
 }

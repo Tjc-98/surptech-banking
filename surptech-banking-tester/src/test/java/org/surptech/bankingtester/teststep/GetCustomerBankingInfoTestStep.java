@@ -1,6 +1,7 @@
 package org.surptech.bankingtester.teststep;
 
 import io.restassured.response.Response;
+import org.surptech.common.tester.teststep.TestStep;
 import org.surptech.bankingtester.client.DataAggregatorClient;
 import org.surptech.bankingtester.model.CustomerBankingInfo;
 

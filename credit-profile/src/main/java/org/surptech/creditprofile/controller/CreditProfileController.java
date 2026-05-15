@@ -4,6 +4,7 @@ import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.surptech.common.controller.BaseController;
 import org.surptech.creditprofile.domain.response.CreditProfileResponse;
 import org.surptech.creditprofile.domain.request.CreditProfileRequest;
 import org.surptech.creditprofile.procedure.CreateCreditProfileProcedure;

@@ -3,6 +3,7 @@ package org.surptech.dataaggregator.controller;
 import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.surptech.common.controller.BaseController;
 import org.surptech.dataaggregator.client.AuthServerClient;
 import org.surptech.dataaggregator.domain.response.CustomerCreditInfoResponse;
 import org.surptech.dataaggregator.procedure.GetCustomerCreditInfoProcedure;

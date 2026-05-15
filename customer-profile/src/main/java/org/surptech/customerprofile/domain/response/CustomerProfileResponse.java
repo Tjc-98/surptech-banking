@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
  * Data Transfer Object for customer profile API responses.
  *
  * This DTO represents the outgoing HTTP response payload for customer profile operations.
- * It contains the customer profile information that should be returned to the client.
+ * It transmits customer profile information that has been retrieved or created.
  *
  * All fields use snake_case JSON property names to follow RESTful API naming conventions.
- * Null fields are excluded from JSON serialization via JsonInclude.Include.NON_NULL.
+ * Null fields are excluded from JSON serialization via {@link JsonInclude#NON_NULL}.
  */
 @Data
 @Builder
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerProfileResponse {
 
-    /** The unique social security number of the customer */
+    /** The unique social security number of the customer (USA format: XXX-XX-XXXX) */
     @JsonProperty("social_security_number")
     private String socialSecurityNumber;
 

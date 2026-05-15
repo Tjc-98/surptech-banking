@@ -1,9 +1,9 @@
 package org.surptech.creditprofile.procedure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.surptech.common.config.ApplicationContextProvider;
 import org.surptech.common.procedure.BaseProcedure;
 import org.surptech.common.validation.ValidationUtils;
-import org.surptech.creditprofile.config.ApplicationContextProvider;
 import org.surptech.creditprofile.domain.response.CreditProfileResponse;
 import org.surptech.creditprofile.domain.entity.CreditProfileEntity;
 import org.surptech.creditprofile.mapper.CreditProfileMapper;
