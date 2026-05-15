@@ -42,7 +42,9 @@ test-output/
 surefire-reports/
 failsafe-reports/
 *.html
-*.xml
+TEST-*.xml
+surefire-reports/*.xml
+failsafe-reports/*.xml
 
 # Allure Reports
 allure-results/
