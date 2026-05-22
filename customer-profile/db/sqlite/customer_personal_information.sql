@@ -15,4 +15,6 @@ ON customer_profile(last_name);
 -- Insert dummy data for testing
 INSERT OR IGNORE INTO customer_profile (social_security_number, first_name, last_name, address) 
 VALUES ('123-45-6789', 'James', 'Smith', '456 Tailor Street, California, LA 56001');
+INSERT OR IGNORE INTO customer_profile (social_security_number, first_name, last_name, address) 
+VALUES ('987-65-4321', 'John', 'Travolta', '123 West Street, New York, NY 875423');
 

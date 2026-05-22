@@ -15,3 +15,5 @@ ON credit_profile(full_credit_balance);
 -- Insert dummy data for testing (matching SSN with customer_profile)
 INSERT OR IGNORE INTO credit_profile (social_security_number, full_credit_balance, spend_balance, interest_rate) 
 VALUES ('123-45-6789', 15000.00, 5000.00, 3.5);
+INSERT OR IGNORE INTO credit_profile (social_security_number, full_credit_balance, spend_balance, interest_rate) 
+VALUES ('987-65-4321', 28000.00, 12000.00, 8.5);
