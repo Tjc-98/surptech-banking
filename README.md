@@ -173,4 +173,4 @@ surptech-banking/
 
 ## 📝 License
 
-Copyright © 2024 SurpTech
+Copyright © 2026 SurpTech
