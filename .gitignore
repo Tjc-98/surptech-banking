@@ -23,14 +23,11 @@
 hs_err_pid*
 replay_pid*
 
-# IntelliJ IDEA
-.idea/
-*.iml
-*.iws
-*.ipr
-
 # Maven
 target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -48,6 +45,7 @@ allure-results/
 allure-report/
 test-output/
 test-logs/
+coverage/
 
 # Allure CLI (should be downloaded, not committed)
 .allure/
@@ -56,3 +54,76 @@ test-logs/
 *-profile.log
 *-aggregator.log
 *.pid
+
+# IDEs
+## IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+## VS Code
+.vscode/
+
+## Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+## NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Build directories
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Node.js / Frontend
+node_modules/
+.pnp/
+.pnp.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Next.js
+.next/
+out/
+
+# Environment variables
+.env
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# Operating System
+## Mac OS
+.DS_Store
+
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+## Linux
+*~
+
+# Misc
+*.pem
+*.swp
+*.swo
+HELP.md

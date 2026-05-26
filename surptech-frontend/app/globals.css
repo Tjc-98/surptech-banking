@@ -1,0 +1,30 @@
+/**
+ * Global styles for the SurpTech Banking Frontend.
+ * 
+ * Includes Tailwind CSS directives and custom global styles.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  
+  body {
+    @apply text-secondary-900 bg-secondary-50;
+  }
+}
+
+@layer components {
+  /* Custom component styles can be added here */
+}
+
+@layer utilities {
+  /* Custom utility classes can be added here */
+  .text-balance {
+    text-wrap: balance;
+  }
+}
