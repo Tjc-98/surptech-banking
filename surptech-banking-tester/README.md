@@ -1,192 +1,107 @@
-# SurpTech Banking System - Integration Tester
+# surptech-banking-tester
 
-Automated integration testing suite for the SurpTech Banking System.
+Integration test suite for the SurpTech Banking System. Tests are written against the `data-aggregator` service and validate the full end-to-end flow from the API gateway through to the downstream data services.
 
-## Overview
+## Purpose
 
-This project provides comprehensive integration testing for the SurpTech Banking System, focusing on testing the Data Aggregator gateway service and its interactions with backend services (Customer Profile and Credit Profile).
+Provides automated integration tests that verify the `data-aggregator` API behaves correctly under normal conditions, error conditions, and edge cases. Tests are organized into tagged suites so they can be run selectively in CI or locally.
 
-**Built with:** [surptech-common-tester](../surptech-common-tester) - Shared testing utilities and base classes
+## Prerequisites
 
-## Quick Start
+All three backend services must be running before executing tests:
 
-### Prerequisites
+- `customer-profile` on port `5551`
+- `credit-profile` on port `5552`
+- `data-aggregator` on port `5555`
 
-1. Build the common tester library:
-   ```bash
-   cd ../surptech-common-tester
-   mvn clean install
-   ```
-
-2. Ensure all services are running:
-   - Data Aggregator (port 5555, context path /data-aggregator)
-   - Customer Profile (port 5551)
-   - Credit Profile (port 5552)
-
-3. Java 25 and Maven installed
-
-### Run Tests
-
-```bash
-# Run all tests
-mvn clean test
-
-# Run specific suite
-mvn clean test -Dtest.suite=smoke
-mvn clean test -Dtest.suite=integration
-
-# Using profiles (alternative)
-mvn clean test -P smoke
-
-# Using shell scripts
-./run-tests.sh smoke              # Linux/Mac
-run-tests.bat smoke               # Windows
-```
+See the [root README](../README.md) for instructions on starting the services.
 
 ## Test Suites
 
-| Suite | Command | Description |
-|-------|---------|-------------|
-| **smoke** | `-Dtest.suite=smoke` | Quick smoke tests (~5 tests) |
-| **integration** | `-Dtest.suite=integration` | Full integration tests (~10 tests) |
-| **error-handling** | `-Dtest.suite=error-handling` | Error scenario tests (~8 tests) |
-| **health** | `-Dtest.suite=health` | Service health checks (~3 tests) |
-| **all** | `mvn test` | All tests (default) |
-| **ci** | `-P ci` | CI/CD optimized (parallel) |
+Tests are tagged with JUnit 5 `@Tag` annotations and grouped into Maven profiles.
 
-## Project Structure
+| Suite | Tag | Profile | Description |
+|---|---|---|---|
+| Smoke | `smoke` | `smoke` | Quick sanity checks — verifies the service is reachable and returns expected data for a known SSN |
+| Integration | `integration` | `integration` | Full happy-path scenarios covering the aggregated response structure |
+| Error Handling | `error-handling` | `error-handling` | Validates correct HTTP status codes and error response bodies for invalid inputs |
+| Health | `health` | `health` | Verifies the `/services/management/health` endpoint reports downstream service status |
+| CI | — | `ci` | Runs `smoke` + `integration` in parallel (4 threads) for CI pipelines |
 
-```
-surptech-banking-tester/
-├── src/test/java/org/surptech/bankingtester/
-│   ├── annotation/          # Custom test annotations (@TestId)
-│   ├── base/                # Base test classes
-│   ├── client/              # REST clients for services
-│   ├── config/              # Test configuration
-│   ├── model/               # Data models
-│   ├── suite/               # Test suites
-│   └── tests/               # Test classes
-├── src/test/resources/
-│   ├── application.properties  # Test configuration
-│   └── logback-test.xml       # Logging configuration
-├── pom.xml
-├── README.md
-├── TESTING-GUIDE.md         # Comprehensive testing guide
-└── run-tests.sh/bat         # Test runner scripts
-```
-
-## CI/CD Integration
-
-### GitHub Actions
-
-A workflow is provided in `.github/workflows/run-tests.yml`:
-
-**Manual Trigger Only:**
-1. Go to Actions tab → "Run Integration Tests"
-2. Click "Run workflow"
-3. Select test suite from dropdown
-4. Click "Run workflow" button
-
-**Features:**
-- Builds and starts all services automatically
-- Runs selected test suite
-- Generates and uploads test reports as artifacts
-- Reports retained for 30 days
-
-### Other CI/CD Platforms
+## Running Tests
 
 ```bash
-# Jenkins, GitLab CI, Azure DevOps, etc.
-mvn clean test -Dtest.suite=smoke
+# Build the shared testing library first
+cd ../surptech-common-tester
+mvn clean install
+
+# Run all suites (default)
+cd ../surptech-banking-tester
+mvn clean test
+
+# Run a specific suite
+mvn clean test -P smoke
+mvn clean test -P integration
+mvn clean test -P error-handling
+mvn clean test -P health
+mvn clean test -P ci
 ```
 
-See [TESTING-GUIDE.md](TESTING-GUIDE.md) for detailed CI/CD examples.
+## Test Data
+
+Test data is configured in `src/test/resources/application.properties`.
+
+| Property | Value | Description |
+|---|---|---|
+| `data.aggregator.base.url` | `http://localhost:5555/data-aggregator` | Target service URL |
+| `test.data.valid.ssn` | `123-45-6789` | SSN with both customer and credit profiles seeded |
+| `test.data.invalid.ssn` | `999-99-9999` | SSN with no data — expects 404 |
+| `test.expected.firstName` | `James` | Expected first name for valid SSN |
+| `test.expected.lastName` | `Smith` | Expected last name for valid SSN |
+| `test.expected.address` | `456 Tailor Street, California, LA 56001` | Expected address for valid SSN |
 
 ## Test Reports
 
-### Local Development
+### Allure Report (recommended)
 
 ```bash
-# View Allure report (recommended)
 mvn allure:serve
-
-# Or generate static report
-mvn allure:report
-open target/allure-report/index.html
 ```
 
-### GitHub Actions
+Opens an interactive Allure report in the browser with test steps, request/response details, and history.
 
-Reports are uploaded as workflow artifacts:
-1. Go to Actions tab → workflow run
-2. Download artifacts from "Artifacts" section
-3. Extract and open `allure-report/index.html`
-
-**Important:** Reports are NOT committed to the repository. They are:
-- Generated in `target/` directory (excluded by `.gitignore`)
-- Uploaded as artifacts in CI/CD systems
-- Automatically cleaned by `mvn clean`
-
-## Configuration
-
-Edit `src/test/resources/application.properties`:
-
-```properties
-# Service URLs
-data.aggregator.base.url=http://localhost:5555/data-aggregator
-
-# Test Data
-test.data.valid.ssn=123-45-6789
-test.data.invalid.ssn=999-99-9999
-
-# Expected Results
-test.expected.firstName=James
-test.expected.lastName=Smith
-test.expected.address=456 Tailor Street, California, LA 56001
-```
-
-## Technologies
-
-- **JUnit 5** - Testing framework
-- **REST Assured** - REST API testing
-- **Allure** - Test reporting
-- **Lombok** - Reduce boilerplate
-- **Jackson** - JSON processing
-- **SLF4J + Logback** - Logging
-- **Maven Surefire** - Test execution
-- **SurpTech Common Tester** - Shared testing utilities
-
-## Documentation
-
-- **[TESTING-GUIDE.md](TESTING-GUIDE.md)** - Comprehensive testing guide with CI/CD examples
-- **[README.md](README.md)** - This file (quick start)
-
-## Troubleshooting
-
-### Services Not Available
+### Surefire HTML Report
 
 ```bash
-# Check if services are running
-curl http://localhost:5551/actuator/health
-curl http://localhost:5552/actuator/health
-curl http://localhost:5555/data-aggregator/actuator/health
+# Report is generated automatically after mvn test
+# Open target/site/surefire-report.html
 ```
 
-### Clean Build
+### Raw XML Results
 
-```bash
-# Clean and rebuild
-mvn clean test
-```
+JUnit XML reports are written to `target/surefire-reports/` and are compatible with most CI systems.
 
-### Common Tester Dependency Not Found
+## CI/CD
 
-```bash
-# Build common tester first
-cd ../surptech-common-tester
-mvn clean install
-cd ../surptech-banking-tester
-mvn clean test
-```
+The GitHub Actions workflow `.github/workflows/run-tests.yml` can be triggered manually from the Actions tab. It:
 
-For more help, see [TESTING-GUIDE.md](TESTING-GUIDE.md).
+1. Builds `surptech-common` and `surptech-common-tester`
+2. Packages and starts all three backend services
+3. Waits for each service health check to pass
+4. Runs the selected test suite
+5. Uploads Allure results and Surefire XML as artifacts (retained 30 days)
+6. Publishes a test summary to the GitHub PR/commit via `dorny/test-reporter`
+
+Available suite options in the workflow: `all`, `smoke`, `integration`, `error-handling`, `health`, `ci`.
+
+## Technology Stack
+
+| Technology | Version |
+|---|---|
+| Java | 25 |
+| JUnit 5 (Jupiter) | 6.0.3 |
+| REST Assured | 5.5.0 |
+| Allure | 2.27.0 |
+| Maven Surefire | 3.5.2 |
+| Logback | 1.5.15 |
+| surptech-common-tester | 1.0.0-SNAPSHOT |

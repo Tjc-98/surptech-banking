@@ -1,195 +1,114 @@
-# Customer Profile Service - Integration Tester
+# customer-profile-tester
 
-Automated integration testing suite for the Customer Profile Service.
+Integration test suite for the Customer Profile service. Tests are written against the `customer-profile` service directly and validate both the GET and POST endpoints under normal conditions, error conditions, and edge cases.
 
-## Overview
+## Purpose
 
-This project provides comprehensive integration testing for the Customer Profile Service, focusing on testing customer profile retrieval and creation endpoints.
+Provides automated integration tests that verify the `customer-profile` API behaves correctly in isolation. Tests are organized into tagged suites so they can be run selectively in CI or locally.
 
-## Quick Start
+## Prerequisites
 
-### Prerequisites
+The `customer-profile` service must be running before executing tests:
 
-1. Ensure Customer Profile service is running:
-   - Customer Profile (port 5551, context path /customer-profile)
+- `customer-profile` on port `5551`
 
-2. Java 25 and Maven installed
-
-### Run Tests
-
-```bash
-# Run all tests
-mvn clean test
-
-# Run specific suite
-mvn clean test -Dtest.suite=smoke
-mvn clean test -Dtest.suite=integration
-
-# Using profiles (alternative)
-mvn clean test -P smoke
-
-# Using shell scripts
-./run-tests.sh smoke              # Linux/Mac
-run-tests.bat smoke               # Windows
-```
+See the [root README](../README.md) for instructions on starting the service.
 
 ## Test Suites
 
-| Suite | Command | Description |
-|-------|---------|-------------|
-| **smoke** | `-Dtest.suite=smoke` | Quick smoke tests (~5 tests) |
-| **integration** | `-Dtest.suite=integration` | Full integration tests (~8 tests) |
-| **error-handling** | `-Dtest.suite=error-handling` | Error scenario tests (~2 tests) |
-| **health** | `-Dtest.suite=health` | Service health checks (~2 tests) |
-| **all** | `mvn test` | All tests (default) |
-| **ci** | `-P ci` | CI/CD optimized (parallel) |
+Tests are tagged with JUnit 5 `@Tag` annotations and grouped into Maven profiles.
 
-## Project Structure
+| Suite | Tag | Profile | Description |
+|---|---|---|---|
+| Smoke | `smoke` | `smoke` | Quick sanity checks — verifies the service is reachable and returns expected data for a known SSN |
+| Integration | `integration` | `integration` | Full happy-path scenarios for GET and POST endpoints |
+| Error Handling | `error-handling` | `error-handling` | Validates correct HTTP status codes and error bodies for invalid inputs |
+| Health | `health` | `health` | Verifies the `/management/health` endpoint responds correctly |
+| CI | — | `ci` | Runs `smoke` + `integration` in parallel (4 threads) for CI pipelines |
 
-```
-customer-profile-tester/
-├── src/test/java/org/surptech/customerprofiletester/
-│   ├── base/                # Base test classes
-│   ├── client/              # REST client for Customer Profile service
-│   ├── config/              # Test configuration
-│   ├── model/               # Data models
-│   ├── suite/               # Test suites
-│   ├── tests/               # Test classes
-│   ├── teststep/            # Test step implementations
-│   └── TestRunner.java      # Command-line test runner
-├── src/test/resources/
-│   ├── application.properties  # Test configuration
-│   └── logback-test.xml       # Logging configuration
-├── pom.xml
-└── README.md
-```
+## Test Classes
 
-## Test Coverage
+| Class | Test IDs | Description |
+|---|---|---|
+| `ServiceHealthTest` | — | Verifies the health endpoint returns `UP` |
+| `GetCustomerProfileTest` | GCPT-01 to GCPT-05 | Retrieval scenarios: valid SSN, not found, invalid format |
+| `CreateCustomerProfileTest` | CCPT-01 to CCPT-03 | Creation scenarios: new profile, duplicate SSN (upsert), invalid request |
 
-### Service Health Tests
-- **CPH-01**: Verify service health endpoint
-- **CPH-02**: Verify health response structure
-
-### Get Customer Profile Tests
-- **GCPT-01**: Retrieve customer profile with valid SSN
-- **GCPT-02**: Validate data structure and completeness
-- **GCPT-03**: Verify response time performance
-- **GCPT-04**: Handle non-existent customer (404)
-- **GCPT-05**: Verify all fields are populated correctly
-
-### Create Customer Profile Tests
-- **CCPT-01**: Create new customer profile successfully
-- **CCPT-02**: Create and then retrieve profile
-- **CCPT-03**: Update existing customer profile
-
-## CI/CD Integration
-
-### GitHub Actions
-
-A workflow is provided in `.github/workflows/customer-profile-tests.yml`:
-
-**Manual Trigger Only:**
-1. Go to Actions tab → "Run Customer Profile Tests"
-2. Click "Run workflow"
-3. Select test suite from dropdown
-4. Click "Run workflow" button
-
-**Features:**
-- Builds and starts Customer Profile service automatically
-- Runs selected test suite
-- Generates and uploads test reports as artifacts
-- Reports retained for 30 days
-
-### Other CI/CD Platforms
+## Running Tests
 
 ```bash
-# Jenkins, GitLab CI, Azure DevOps, etc.
-mvn clean test -Dtest.suite=smoke
+# Build the shared testing library first
+cd ../surptech-common-tester
+mvn clean install
+
+# Run all suites (default)
+cd ../customer-profile-tester
+mvn clean test
+
+# Run a specific suite
+mvn clean test -P smoke
+mvn clean test -P integration
+mvn clean test -P error-handling
+mvn clean test -P health
+mvn clean test -P ci
 ```
+
+## Test Data
+
+Test data is configured in `src/test/resources/application.properties`.
+
+| Property | Value | Description |
+|---|---|---|
+| `customer.profile.base.url` | `http://localhost:5551/customer-profile` | Target service URL |
+| `test.data.valid.ssn` | `123-45-6789` | SSN with a seeded profile — expects James Smith |
+| `test.data.invalid.ssn` | `999-99-9999` | SSN with no data — expects 404 |
+| `test.data.new.ssn` | `111-22-3333` | SSN used for creation tests |
+| `test.create.ssn` | `555-66-7777` | SSN for POST create tests |
+| `test.create.firstName` | `John` | First name for create test data |
+| `test.create.lastName` | `Doe` | Last name for create test data |
+| `test.create.address` | `123 Main Street, New York, NY 10001` | Address for create test data |
 
 ## Test Reports
 
-### Local Development
+### Allure Report (recommended)
 
 ```bash
-# View Allure report (recommended)
 mvn allure:serve
-
-# Or generate static report
-mvn allure:report
-# Open target/allure-report/index.html in browser
 ```
 
-### GitHub Actions
+Opens an interactive Allure report in the browser with test steps, request/response details, and history.
 
-Reports are uploaded as workflow artifacts:
-1. Go to Actions tab → workflow run
-2. Download artifacts from "Artifacts" section
-3. Extract and open `allure-report/index.html`
-
-**Important:** Reports are NOT committed to the repository. They are:
-- Generated in `target/` directory (excluded by `.gitignore`)
-- Uploaded as artifacts in CI/CD systems
-- Automatically cleaned by `mvn clean`
-
-## Configuration
-
-Edit `src/test/resources/application.properties`:
-
-```properties
-# Service URLs
-customer.profile.base.url=http://localhost:5551/customer-profile
-
-# Test Data
-test.data.valid.ssn=123-45-6789
-test.data.invalid.ssn=999-99-9999
-
-# Expected Results
-test.expected.firstName=James
-test.expected.lastName=Smith
-test.expected.address=456 Tailor Street, California, LA 56001
-```
-
-## Technologies
-
-- **JUnit 5** - Testing framework
-- **REST Assured** - REST API testing
-- **Allure** - Test reporting
-- **Lombok** - Reduce boilerplate
-- **Jackson** - JSON processing
-- **SLF4J + Logback** - Logging
-- **Maven Surefire** - Test execution
-- **SurpTech Common Tester** - Shared testing utilities
-
-## Troubleshooting
-
-### Service Not Available
+### Surefire HTML Report
 
 ```bash
-# Check if service is running
-curl http://localhost:5551/customer-profile/management/health
+# Report is generated automatically after mvn test
+# Open target/site/surefire-report.html
 ```
 
-### Clean Build
+### Raw XML Results
 
-```bash
-# Clean and rebuild
-mvn clean test
-```
+JUnit XML reports are written to `target/surefire-reports/` and are compatible with most CI systems.
 
-## Dependencies
+## CI/CD
 
-This project depends on:
-- **surptech-common-tester** - Shared testing utilities and base classes
+The GitHub Actions workflow `.github/workflows/customer-profile-tests.yml` can be triggered manually from the Actions tab. It:
 
-Make sure to build the common tester first:
+1. Builds `surptech-common` and `surptech-common-tester`
+2. Packages and starts the `customer-profile` service
+3. Waits for the health check to pass
+4. Runs the selected test suite
+5. Uploads Allure results and Surefire XML as artifacts (retained 30 days)
 
-```bash
-cd ../surptech-common-tester
-mvn clean install
-cd ../customer-profile-tester
-```
+Available suite options in the workflow: `smoke`, `integration`, `error-handling`, `health`.
 
-## License
+## Technology Stack
 
-Copyright © 2024 SurpTech
+| Technology | Version |
+|---|---|
+| Java | 25 |
+| JUnit 5 (Jupiter) | 6.0.3 |
+| REST Assured | 5.5.0 |
+| Allure | 2.27.0 |
+| Maven Surefire | 3.5.2 |
+| Logback | 1.5.15 |
+| surptech-common-tester | 1.0.0-SNAPSHOT |

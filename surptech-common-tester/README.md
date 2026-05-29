@@ -1,22 +1,64 @@
-# SurpTech Common Tester
+# surptech-common-tester
 
-Common testing utilities and base classes for SurpTech test suites.
+Shared testing library that provides base classes, utilities, and infrastructure for all SurpTech integration test suites. It is a required dependency for `surptech-banking-tester` and `customer-profile-tester`.
 
-## Overview
+## Purpose
 
-This library provides shared testing infrastructure used across all SurpTech testing projects. It includes:
+Eliminates duplication across test suites by centralizing test lifecycle management, step execution, configuration loading, and Allure reporting integration. Test suites depend on this library and extend its base classes rather than re-implementing boilerplate.
 
-- **Base Test Classes** - Common test lifecycle management and logging
-- **Test Step Framework** - Builder pattern for API test steps
-- **Configuration Management** - Base configuration loader
-- **Custom Annotations** - Test ID tracking
-- **Listeners** - Allure integration and custom reporting
+## Key Components
 
-## Usage
+### Base Classes
 
-### Maven Dependency
+| Class | Description |
+|---|---|
+| `BaseTest` | Extends `TestLifecycleManager`. Entry point for all test classes. Provides `initializeTestResources()` and inherits lifecycle hooks. |
+| `TestLifecycleManager` | Manages `@BeforeEach` / `@AfterEach` hooks. Outputs formatted box-drawing log banners around each test. Provides `logStep()` which writes to both SLF4J and `Allure.step()` simultaneously. |
+| `TestStep<T>` | Abstract builder-pattern base for reusable test steps. Subclasses implement `execute()` (send the request), `verify()` (assert the response), and `getDescription()`. The `run()` method orchestrates all three with logging. |
 
-Add this dependency to your test project's `pom.xml`:
+### Configuration
+
+`BaseTestConfiguration` loads `application.properties` from the test classpath and exposes:
+
+- `getProperty(key)` — returns a string property value
+- `getIntProperty(key)` — returns an integer property value
+
+Each test suite provides its own `application.properties` with service URLs and test data values.
+
+### Annotations
+
+`@TestId` — a `@Target(METHOD)` / `@Retention(RUNTIME)` annotation for attaching traceability IDs to test methods.
+
+### Reporting
+
+`AllureLogAppender` and `CustomTestReportListener` integrate with Allure to capture log output and test lifecycle events in the generated report.
+
+## Technology Stack
+
+| Technology | Version |
+|---|---|
+| Java | 25 |
+| JUnit 5 (Jupiter) | 6.0.3 |
+| JUnit Platform Suite | 6.0.3 |
+| REST Assured | 5.5.0 |
+| Allure JUnit 5 | 2.27.0 |
+| Allure REST Assured | 2.27.0 |
+| Jackson | 2.18.2 |
+| Logback | 1.5.15 |
+| Lombok | 1.18.46 |
+
+## Building
+
+This library must be installed to the local Maven repository before building any dependent test suite.
+
+```bash
+cd surptech-common-tester
+mvn clean install
+```
+
+## Usage in Test Suites
+
+Add the dependency to the test suite's `pom.xml`:
 
 ```xml
 <dependency>
@@ -27,124 +69,4 @@ Add this dependency to your test project's `pom.xml`:
 </dependency>
 ```
 
-### Extending Base Classes
-
-```java
-// Extend BaseTest for test lifecycle management
-public class MyTest extends BaseTest {
-    
-    @BeforeAll
-    public static void setup() {
-        initializeTestResources();
-        // Your setup code
-    }
-    
-    @Test
-    @TestId("MY-01")
-    @DisplayName("My test case")
-    public void testSomething() {
-        logStep("Performing test step");
-        // Your test code
-    }
-}
-```
-
-### Creating Test Steps
-
-```java
-// Extend TestStep for API test steps
-public class MyTestStep extends TestStep<MyTestStep> {
-    
-    private final MyClient client;
-    private String param;
-    
-    public MyTestStep(MyClient client) {
-        this.client = client;
-    }
-    
-    public MyTestStep withParam(String param) {
-        this.param = param;
-        return this;
-    }
-    
-    @Override
-    protected Response execute() {
-        return client.callApi(param);
-    }
-    
-    @Override
-    protected void verify() {
-        // Add assertions
-    }
-    
-    @Override
-    protected String getDescription() {
-        return "Calling API with param: " + param;
-    }
-}
-```
-
-### Configuration
-
-```java
-// Extend BaseTestConfiguration
-public class MyTestConfiguration extends BaseTestConfiguration {
-    
-    private static MyTestConfiguration instance;
-    
-    public static MyTestConfiguration getInstance() {
-        if (instance == null) {
-            instance = new MyTestConfiguration();
-        }
-        return instance;
-    }
-    
-    public String getServiceUrl() {
-        return getProperty("service.url");
-    }
-}
-```
-
-## Components
-
-### Base Classes
-
-- `BaseTest` - Base test class with lifecycle management
-- `TestLifecycleManager` - Test lifecycle hooks and logging
-- `BaseTestConfiguration` - Configuration loader
-
-### Test Step Framework
-
-- `TestStep<T>` - Abstract base for test steps with builder pattern
-
-### Annotations
-
-- `@TestId` - Mark tests with unique identifiers
-
-### Listeners
-
-- `AllureLogAppender` - Forward logs to Allure reports
-- `CustomTestReportListener` - Enhanced test reporting
-
-## Building
-
-```bash
-# Install to local Maven repository
-mvn clean install
-
-# Skip tests (if any)
-mvn clean install -DskipTests
-```
-
-## Technologies
-
-- **JUnit 5** - Testing framework
-- **REST Assured** - REST API testing
-- **Allure** - Test reporting
-- **Lombok** - Reduce boilerplate
-- **Jackson** - JSON processing
-- **SLF4J + Logback** - Logging
-
-## License
-
-Copyright © 2024 SurpTech
+Extend `BaseTest` in your test classes and `TestStep<T>` for reusable step implementations.
