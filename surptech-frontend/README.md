@@ -262,11 +262,27 @@ Access the application at `http://localhost:3000`
 - [Quick Start Guide](QUICKSTART.md) - Get started in 5 minutes
 - [Contributing Guide](CONTRIBUTING.md) - Development guidelines
 
+**Cloud Integration Documentation** (all docs live in `cloud-integration/`):
+- 🎯 [START HERE](cloud-integration/START_HERE.md) - **Your entry point to cloud integration** (start here!)
+- ⚡ [Quick Start Guide](cloud-integration/CLOUD_INTEGRATION_QUICKSTART.md) - Set up cloud services in 5 minutes
+- 💻 [Integration Baseline](cloud-integration/INTEGRATION_BASELINE.md) - Complete technical guide with all code examples
+- 📊 [Integration Summary](cloud-integration/CLOUD_INTEGRATION_SUMMARY.md) - Executive overview, timeline, and costs
+- 🏛️ [Architecture Diagrams](cloud-integration/CLOUD_ARCHITECTURE_DIAGRAM.md) - Visual system architecture
+- ✅ [Implementation Checklist](cloud-integration/IMPLEMENTATION_CHECKLIST.md) - Phase-by-phase task tracking
+- 🗺️ [Implementation Roadmap](cloud-integration/CLOUD_INTEGRATION_ROADMAP.md) - Visual 10-week timeline
+- 📖 [Documentation Index](cloud-integration/CLOUD_INTEGRATION_INDEX.md) - Master navigation guide
+- 📄 [Delivery Summary](cloud-integration/CLOUD_INTEGRATION_DELIVERY_SUMMARY.md) - What's been delivered
+- 📋 [Quick Reference Card](cloud-integration/CLOUD_INTEGRATION_QUICK_REFERENCE.md) - Print and keep handy
+- 🚀 [Next Steps Guide](cloud-integration/CLOUD_INTEGRATION_NEXT_STEPS.md) - Action plan and decisions
+
 **External Documentation:**
 - [Next.js Documentation](https://nextjs.org/docs)
 - [React Documentation](https://react.dev)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs)
+- [Firebase Documentation](https://firebase.google.com/docs)
+- [Google Cloud Platform Documentation](https://cloud.google.com/docs)
+- [MongoDB Documentation](https://www.mongodb.com/docs)
 
 ## 📝 License
 
