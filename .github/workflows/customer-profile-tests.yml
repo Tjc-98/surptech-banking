@@ -68,13 +68,7 @@ jobs:
       - name: Run Tests
         run: |
           cd customer-profile-tester
-          mvn clean test -Dtest.suite=${{ github.event.inputs.test_suite }}
-      
-      - name: Generate Allure Report
-        if: always()
-        run: |
-          cd customer-profile-tester
-          mvn allure:report
+          mvn clean verify -Dtest.suite=${{ github.event.inputs.test_suite }}
       
       - name: Upload Test Results
         if: always()

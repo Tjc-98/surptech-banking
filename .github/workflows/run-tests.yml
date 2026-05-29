@@ -118,15 +118,10 @@ jobs:
           echo "Executing: ${{ steps.suite.outputs.suite }} test suite"
           echo "=========================================="
           if [ "${{ steps.suite.outputs.suite }}" == "all" ]; then
-            mvn clean test -B
+            mvn clean verify -B
           else
-            mvn clean test -P ${{ steps.suite.outputs.suite }} -B
+            mvn clean verify -P ${{ steps.suite.outputs.suite }} -B
           fi
-
-      - name: Generate Allure Report
-        if: always()
-        working-directory: ./surptech-banking-tester
-        run: mvn allure:report -B
 
       - name: Upload Test Results
         if: always()
