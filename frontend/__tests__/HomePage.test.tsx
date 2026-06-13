@@ -118,7 +118,7 @@ describe('HomePage - Register tab', () => {
     fireEvent.change(screen.getByLabelText('First Name'), { target: { value: 'Alice' } });
     fireEvent.change(screen.getByLabelText('Last Name'), { target: { value: 'Johnson' } });
     fireEvent.change(screen.getByLabelText('Address'), { target: { value: '789 Oak Ave' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Register Customer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Customer' }));
 
     await waitFor(() => {
       expect(screen.getByText('Customer Alice Johnson registered successfully.')).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe('HomePage - Register tab', () => {
 
     render(<HomePage />);
     fireEvent.click(screen.getByRole('button', { name: 'Register Customer' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Register Customer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Customer' }));
 
     await waitFor(() => {
       expect(screen.getByText('First name is required.')).toBeInTheDocument();

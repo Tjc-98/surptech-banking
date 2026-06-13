@@ -375,7 +375,7 @@ export default function HomePage() {
             />
 
             <button className={styles.button} type="submit" disabled={regLoading}>
-              {regLoading ? 'Registering...' : 'Register Customer'}
+              {regLoading ? 'Registering...' : 'Save Customer'}
             </button>
           </form>
 
