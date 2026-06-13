@@ -2,24 +2,20 @@ package org.surptech.banking.dto;
 
 import java.util.List;
 
-/**
- * Response object combining customer personal, credit, and transaction information.
- */
+// Everything the frontend needs about a customer in one object -
+// their personal details, credit account, and transaction history.
 public class CustomerInfoResponse {
 
-    // Customer profile fields
     private String socialSecurityNumber;
     private String firstName;
     private String lastName;
     private String address;
 
-    // Credit profile fields
-    private double fullCreditBalance;
-    private double spendBalance;
-    private double availableBalance;
+    private double fullCreditBalance;  // total credit limit
+    private double spendBalance;       // how much has been used
+    private double availableBalance;   // limit minus spend
     private double interestRate;
 
-    // Transaction history
     private List<TransactionResponse> transactions;
 
     public CustomerInfoResponse() {}

@@ -4,9 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Allows the Next.js frontend (running on port 3000) to call the backend API.
- */
+// Without this, the browser would block requests from the frontend (port 3000)
+// to the backend (port 8080) due to CORS restrictions.
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 

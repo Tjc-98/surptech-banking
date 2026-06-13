@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'SurpTech Banking',
-  description: 'Banking information lookup',
+  description: 'Look up customer accounts, track credit balances, and record transactions.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

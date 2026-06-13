@@ -20,15 +20,12 @@ import org.surptech.banking.service.TransactionService;
 import java.util.List;
 import java.util.Map;
 
-/**
- * REST API controller for the banking system.
- * All endpoints return JSON and are prefixed with /api.
- */
+// All our API routes live here. Everything is under /api.
 @RestController
 @RequestMapping("/api")
 public class BankingApiController {
 
-    // SSN format: XXX-XX-XXXX
+    // SSNs should look like 123-45-6789
     private static final String SSN_PATTERN = "^\\d{3}-\\d{2}-\\d{4}$";
 
     private final BankingInfoService bankingInfoService;
@@ -46,21 +43,19 @@ public class BankingApiController {
         this.transactionService = transactionService;
     }
 
-    /**
-     * GET /api/customer/info?socialSecurityNumber=XXX-XX-XXXX
-     * Returns combined customer, credit, and transaction info for the given SSN.
-     */
+    // GET /api/customer/info?socialSecurityNumber=123-45-6789
+    // Returns everything we know about a customer - their profile, credit account, and transaction history.
     @GetMapping("/customer/info")
     public ResponseEntity<?> getCustomerInfo(@RequestParam String socialSecurityNumber) {
 
         if (socialSecurityNumber == null || socialSecurityNumber.isBlank()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Social Security Number is required."));
+                    .body(Map.of("error", "We need an SSN to search. Please provide one."));
         }
 
         if (!socialSecurityNumber.matches(SSN_PATTERN)) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Invalid SSN format. Expected format: XXX-XX-XXXX."));
+                    .body(Map.of("error", "That SSN doesn't look right. It should be in the format XXX-XX-XXXX."));
         }
 
         CustomerInfoResponse info = bankingInfoService.getCustomerInfo(socialSecurityNumber);
@@ -72,22 +67,20 @@ public class BankingApiController {
         return ResponseEntity.ok(info);
     }
 
-    /**
-     * POST /api/customer/create
-     * Creates or updates a customer profile.
-     */
+    // POST /api/customer/create
+    // Adds a new customer, or updates an existing one if the SSN already exists.
     @PostMapping("/customer/create")
     public ResponseEntity<?> createCustomerProfile(@RequestBody CustomerProfile customerProfile) {
 
         if (customerProfile.getSocialSecurityNumber() == null
                 || customerProfile.getSocialSecurityNumber().isBlank()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Social Security Number is required."));
+                    .body(Map.of("error", "We need an SSN to create a customer profile."));
         }
 
         if (!customerProfile.getSocialSecurityNumber().matches(SSN_PATTERN)) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Invalid SSN format. Expected format: XXX-XX-XXXX."));
+                    .body(Map.of("error", "That SSN doesn't look right. It should be in the format XXX-XX-XXXX."));
         }
 
         if (customerProfile.getFirstName() == null || customerProfile.getFirstName().isBlank()) {
@@ -102,56 +95,52 @@ public class BankingApiController {
 
         if (customerProfile.getAddress() == null || customerProfile.getAddress().isBlank()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Address is required."));
+                    .body(Map.of("error", "Please include a home address."));
         }
 
         CustomerProfile saved = customerProfileService.saveCustomerProfile(customerProfile);
         return ResponseEntity.status(201).body(saved);
     }
 
-    /**
-     * POST /api/credit/create
-     * Creates or updates a credit profile.
-     */
+    // POST /api/credit/create
+    // Sets up a credit account for a customer.
     @PostMapping("/credit/create")
     public ResponseEntity<?> createCreditProfile(@RequestBody CreditProfile creditProfile) {
 
         if (creditProfile.getSocialSecurityNumber() == null
                 || creditProfile.getSocialSecurityNumber().isBlank()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Social Security Number is required."));
+                    .body(Map.of("error", "We need an SSN to create a credit profile."));
         }
 
         if (creditProfile.getFullCreditBalance() <= 0) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Full credit balance must be greater than zero."));
+                    .body(Map.of("error", "The credit limit needs to be a positive amount."));
         }
 
         CreditProfile saved = creditProfileService.saveCreditProfile(creditProfile);
         return ResponseEntity.status(201).body(saved);
     }
 
-    /**
-     * POST /api/transaction/add
-     * Records a deposit or withdrawal for a customer.
-     */
+    // POST /api/transaction/add
+    // Records a deposit or withdrawal against a customer's account.
     @PostMapping("/transaction/add")
     public ResponseEntity<?> addTransaction(@RequestBody TransactionRequest request) {
 
         if (request.getSocialSecurityNumber() == null
                 || request.getSocialSecurityNumber().isBlank()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Social Security Number is required."));
+                    .body(Map.of("error", "We need an SSN to record a transaction."));
         }
 
         if (request.getType() == null) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Transaction type is required (DEPOSIT or WITHDRAWAL)."));
+                    .body(Map.of("error", "Please specify the transaction type - either DEPOSIT or WITHDRAWAL."));
         }
 
         if (request.getAmount() <= 0) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Amount must be greater than zero."));
+                    .body(Map.of("error", "The transaction amount needs to be more than $0.00."));
         }
 
         TransactionResponse saved = transactionService.addTransaction(request);
@@ -163,21 +152,19 @@ public class BankingApiController {
         return ResponseEntity.status(201).body(saved);
     }
 
-    /**
-     * GET /api/transaction/history?socialSecurityNumber=XXX-XX-XXXX
-     * Returns transaction history for a customer, newest first.
-     */
+    // GET /api/transaction/history?socialSecurityNumber=123-45-6789
+    // Returns a customer's full transaction history, most recent first.
     @GetMapping("/transaction/history")
     public ResponseEntity<?> getTransactionHistory(@RequestParam String socialSecurityNumber) {
 
         if (socialSecurityNumber == null || socialSecurityNumber.isBlank()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Social Security Number is required."));
+                    .body(Map.of("error", "We need an SSN to fetch transaction history."));
         }
 
         if (!socialSecurityNumber.matches(SSN_PATTERN)) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Invalid SSN format. Expected format: XXX-XX-XXXX."));
+                    .body(Map.of("error", "That SSN doesn't look right. It should be in the format XXX-XX-XXXX."));
         }
 
         List<TransactionResponse> history =

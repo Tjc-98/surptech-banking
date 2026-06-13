@@ -62,7 +62,7 @@ export default function HomePage() {
     setTxSuccess('');
 
     if (!ssn.trim()) {
-      setLookupError('Please enter a Social Security Number.');
+      setLookupError("Please enter a customer's SSN to search.");
       return;
     }
 
@@ -73,15 +73,15 @@ export default function HomePage() {
       );
 
       if (response.status === 404) {
-        setLookupError(`No customer found for SSN: ${ssn}`);
+        setLookupError(`We couldn't find anyone with SSN ${ssn}. Double-check the number and try again.`);
       } else if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        setLookupError(body.error || 'Something went wrong. Please try again.');
+        setLookupError(body.error || 'Something went wrong. Please try again in a moment.');
       } else {
         setCustomer(await response.json());
       }
     } catch {
-      setLookupError('Could not connect to the server. Make sure the backend is running on port 8080.');
+      setLookupError("Can't reach the server right now. Make sure the backend is running on port 8080.");
     } finally {
       setLookupLoading(false);
     }
@@ -94,7 +94,7 @@ export default function HomePage() {
     setTxSuccess('');
 
     if (!txAmount || Number(txAmount) <= 0) {
-      setTxError('Amount must be greater than zero.');
+      setTxError('The amount needs to be more than $0.00.');
       return;
     }
 
@@ -113,19 +113,20 @@ export default function HomePage() {
 
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        setTxError(body.error || 'Failed to record transaction.');
+        setTxError(body.error || "Couldn't record the transaction. Please try again.");
       } else {
-        setTxSuccess(`${txType.charAt(0) + txType.slice(1).toLowerCase()} of $${Number(txAmount).toFixed(2)} recorded.`);
+        const label = txType === 'DEPOSIT' ? 'Deposit' : 'Withdrawal';
+        setTxSuccess(`${label} of $${Number(txAmount).toFixed(2)} recorded successfully.`);
         setTxAmount('');
         setTxDescription('');
-        // Refresh customer data to show the new transaction
+        // Refresh so the new transaction shows up in the history
         const refreshed = await fetch(
           `${API}/customer/info?socialSecurityNumber=${encodeURIComponent(customer!.socialSecurityNumber)}`
         );
         if (refreshed.ok) setCustomer(await refreshed.json());
       }
     } catch {
-      setTxError('Could not connect to the server.');
+      setTxError("Can't reach the server right now. Please try again.");
     } finally {
       setTxLoading(false);
     }
@@ -152,16 +153,16 @@ export default function HomePage() {
 
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        setRegError(body.error || 'Failed to register customer.');
+        setRegError(body.error || "Couldn't register the customer. Please check the details and try again.");
       } else {
-        setRegSuccess(`Customer ${regFirstName} ${regLastName} registered successfully.`);
+        setRegSuccess(`${regFirstName} ${regLastName} has been added successfully.`);
         setRegSsn('');
         setRegFirstName('');
         setRegLastName('');
         setRegAddress('');
       }
     } catch {
-      setRegError('Could not connect to the server.');
+      setRegError("Can't reach the server right now. Please try again.");
     } finally {
       setRegLoading(false);
     }
@@ -170,6 +171,7 @@ export default function HomePage() {
   return (
     <main className={styles.main}>
       <h1 className={styles.title}>SurpTech Banking</h1>
+      <p className={styles.subtitle}>Look up account details or add a new customer below.</p>
 
       {/* Tabs */}
       <div className={styles.tabs}>
@@ -193,7 +195,7 @@ export default function HomePage() {
           <div className={styles.card}>
             <form onSubmit={handleSearch}>
               <label className={styles.fieldLabel} htmlFor="ssn">
-                Social Security Number
+                Customer SSN
               </label>
               <input
                 id="ssn"
@@ -205,48 +207,50 @@ export default function HomePage() {
                 maxLength={11}
               />
               <button className={styles.button} type="submit" disabled={lookupLoading}>
-                {lookupLoading ? 'Searching...' : 'Look Up'}
+                {lookupLoading ? 'Looking up...' : 'Search'}
               </button>
             </form>
             {lookupError && <p className={styles.error}>{lookupError}</p>}
-            <p className={styles.hint}>Try: <code>123-45-6789</code> or <code>987-65-4321</code></p>
+            <p className={styles.hint}>
+              Not sure what to try? Use <code>123-45-6789</code> or <code>987-65-4321</code>.
+            </p>
           </div>
 
           {customer && (
             <>
-              {/* Customer profile */}
+              {/* Customer details */}
               <div className={styles.card}>
-                <h2 className={styles.sectionTitle}>Customer Profile</h2>
+                <h2 className={styles.sectionTitle}>
+                  {customer.firstName} {customer.lastName}
+                </h2>
                 <table className={styles.table}>
                   <tbody>
                     <tr><td className={styles.fieldLabel}>SSN</td><td>{customer.socialSecurityNumber}</td></tr>
-                    <tr><td className={styles.fieldLabel}>First Name</td><td>{customer.firstName}</td></tr>
-                    <tr><td className={styles.fieldLabel}>Last Name</td><td>{customer.lastName}</td></tr>
                     <tr><td className={styles.fieldLabel}>Address</td><td>{customer.address}</td></tr>
                   </tbody>
                 </table>
 
-                <h2 className={styles.sectionTitle}>Credit Profile</h2>
+                <h2 className={styles.sectionTitle}>Credit Account</h2>
                 <table className={styles.table}>
                   <tbody>
-                    <tr><td className={styles.fieldLabel}>Full Credit Balance</td><td>${customer.fullCreditBalance.toFixed(2)}</td></tr>
-                    <tr><td className={styles.fieldLabel}>Spend Balance</td><td>${customer.spendBalance.toFixed(2)}</td></tr>
+                    <tr><td className={styles.fieldLabel}>Credit limit</td><td>${customer.fullCreditBalance.toFixed(2)}</td></tr>
+                    <tr><td className={styles.fieldLabel}>Amount used</td><td>${customer.spendBalance.toFixed(2)}</td></tr>
                     <tr>
-                      <td className={styles.fieldLabel}>Available Balance</td>
+                      <td className={styles.fieldLabel}>Available to spend</td>
                       <td className={styles.available}>${customer.availableBalance.toFixed(2)}</td>
                     </tr>
-                    <tr><td className={styles.fieldLabel}>Interest Rate</td><td>{customer.interestRate}%</td></tr>
+                    <tr><td className={styles.fieldLabel}>Interest rate</td><td>{customer.interestRate}%</td></tr>
                   </tbody>
                 </table>
               </div>
 
               {/* Add transaction */}
               <div className={styles.card}>
-                <h2 className={styles.sectionTitle}>Add Transaction</h2>
+                <h2 className={styles.sectionTitle}>Record a Transaction</h2>
                 <form onSubmit={handleAddTransaction}>
                   <div className={styles.row}>
                     <div className={styles.field}>
-                      <label className={styles.fieldLabel} htmlFor="txType">Type</label>
+                      <label className={styles.fieldLabel} htmlFor="txType">What kind?</label>
                       <select
                         id="txType"
                         className={styles.input}
@@ -271,17 +275,17 @@ export default function HomePage() {
                       />
                     </div>
                   </div>
-                  <label className={styles.fieldLabel} htmlFor="txDesc">Description (optional)</label>
+                  <label className={styles.fieldLabel} htmlFor="txDesc">Note (optional)</label>
                   <input
                     id="txDesc"
                     className={styles.input}
                     type="text"
                     value={txDescription}
                     onChange={(e) => setTxDescription(e.target.value)}
-                    placeholder="e.g. Salary payment"
+                    placeholder="e.g. Monthly salary"
                   />
                   <button className={styles.button} type="submit" disabled={txLoading}>
-                    {txLoading ? 'Recording...' : 'Record Transaction'}
+                    {txLoading ? 'Saving...' : 'Save Transaction'}
                   </button>
                 </form>
                 {txError && <p className={styles.error}>{txError}</p>}
@@ -292,7 +296,7 @@ export default function HomePage() {
               <div className={styles.card}>
                 <h2 className={styles.sectionTitle}>Transaction History</h2>
                 {customer.transactions.length === 0 ? (
-                  <p className={styles.hint}>No transactions yet.</p>
+                  <p className={styles.hint}>No transactions on record yet.</p>
                 ) : (
                   <table className={styles.table}>
                     <thead>
@@ -300,7 +304,7 @@ export default function HomePage() {
                         <th className={styles.th}>Date</th>
                         <th className={styles.th}>Type</th>
                         <th className={styles.th}>Amount</th>
-                        <th className={styles.th}>Description</th>
+                        <th className={styles.th}>Note</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -308,7 +312,7 @@ export default function HomePage() {
                         <tr key={tx.id}>
                           <td>{new Date(tx.createdAt).toLocaleDateString()}</td>
                           <td className={tx.type === 'DEPOSIT' ? styles.deposit : styles.withdrawal}>
-                            {tx.type}
+                            {tx.type === 'DEPOSIT' ? 'Deposit' : 'Withdrawal'}
                           </td>
                           <td>${tx.amount.toFixed(2)}</td>
                           <td>{tx.description || '-'}</td>
@@ -326,9 +330,10 @@ export default function HomePage() {
       {/* Register tab */}
       {activeTab === 'register' && (
         <div className={styles.card}>
-          <h2 className={styles.sectionTitle}>Register New Customer</h2>
+          <h2 className={styles.sectionTitle}>Add a New Customer</h2>
+          <p className={styles.hint}>Fill in the details below to create a new account.</p>
           <form onSubmit={handleRegister}>
-            <label className={styles.fieldLabel} htmlFor="regSsn">Social Security Number</label>
+            <label className={styles.fieldLabel} htmlFor="regSsn">SSN</label>
             <input
               id="regSsn"
               className={styles.input}
@@ -341,41 +346,41 @@ export default function HomePage() {
 
             <div className={styles.row}>
               <div className={styles.field}>
-                <label className={styles.fieldLabel} htmlFor="regFirst">First Name</label>
+                <label className={styles.fieldLabel} htmlFor="regFirst">First name</label>
                 <input
                   id="regFirst"
                   className={styles.input}
                   type="text"
                   value={regFirstName}
                   onChange={(e) => setRegFirstName(e.target.value)}
-                  placeholder="First name"
+                  placeholder="e.g. James"
                 />
               </div>
               <div className={styles.field}>
-                <label className={styles.fieldLabel} htmlFor="regLast">Last Name</label>
+                <label className={styles.fieldLabel} htmlFor="regLast">Last name</label>
                 <input
                   id="regLast"
                   className={styles.input}
                   type="text"
                   value={regLastName}
                   onChange={(e) => setRegLastName(e.target.value)}
-                  placeholder="Last name"
+                  placeholder="e.g. Smith"
                 />
               </div>
             </div>
 
-            <label className={styles.fieldLabel} htmlFor="regAddress">Address</label>
+            <label className={styles.fieldLabel} htmlFor="regAddress">Home address</label>
             <input
               id="regAddress"
               className={styles.input}
               type="text"
               value={regAddress}
               onChange={(e) => setRegAddress(e.target.value)}
-              placeholder="Full address"
+              placeholder="Street, City, State ZIP"
             />
 
             <button className={styles.button} type="submit" disabled={regLoading}>
-              {regLoading ? 'Registering...' : 'Save Customer'}
+              {regLoading ? 'Saving...' : 'Save Customer'}
             </button>
           </form>
 

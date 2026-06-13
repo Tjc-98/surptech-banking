@@ -7,9 +7,8 @@ import org.surptech.banking.entity.CustomerProfile;
 
 import java.util.Optional;
 
-/**
- * Aggregates customer personal, credit, and transaction information into one response.
- */
+// Pulls together everything we know about a customer into one response object.
+// Rather than making the frontend call three separate endpoints, this does it all in one go.
 @Service
 public class BankingInfoService {
 
@@ -31,6 +30,7 @@ public class BankingInfoService {
         Optional<CreditProfile> creditProfile =
                 creditProfileService.getCreditProfile(socialSecurityNumber);
 
+        // Nothing found at all - let the controller return a 404
         if (customerProfile.isEmpty() && creditProfile.isEmpty()) {
             return null;
         }
@@ -49,11 +49,12 @@ public class BankingInfoService {
             CreditProfile credit = creditProfile.get();
             response.setFullCreditBalance(credit.getFullCreditBalance());
             response.setSpendBalance(credit.getSpendBalance());
+            // Available balance = how much credit is left to use
             response.setAvailableBalance(credit.getFullCreditBalance() - credit.getSpendBalance());
             response.setInterestRate(credit.getInterestRate());
         }
 
-        // Include transaction history
+        // Tack on the transaction history so the frontend has everything it needs
         response.setTransactions(transactionService.getTransactionHistory(socialSecurityNumber));
 
         return response;

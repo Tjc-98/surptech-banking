@@ -60,7 +60,7 @@ class BankingApiControllerTest {
         mockMvc.perform(get("/api/customer/info")
                         .param("socialSecurityNumber", "INVALID"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Invalid SSN format. Expected format: XXX-XX-XXXX."));
+                .andExpect(jsonPath("$.error").value("That SSN doesn't look right. It should be in the format XXX-XX-XXXX."));
     }
 
     // --- Create customer ---
@@ -160,7 +160,7 @@ class BankingApiControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Amount must be greater than zero."));
+                .andExpect(jsonPath("$.error").value("The transaction amount needs to be more than $0.00."));
     }
 
     @Test

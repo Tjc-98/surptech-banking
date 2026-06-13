@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+// Stores the credit account details for a customer.
+// The available balance isn't stored here - it gets calculated on the fly as limit minus spend.
 @Entity
 @Table(name = "credit_profile")
 public class CreditProfile {
@@ -14,10 +16,10 @@ public class CreditProfile {
     private String socialSecurityNumber;
 
     @Column(name = "full_credit_balance", nullable = false)
-    private double fullCreditBalance;
+    private double fullCreditBalance; // the total credit limit
 
     @Column(name = "spend_balance", nullable = false)
-    private double spendBalance;
+    private double spendBalance; // how much has been used so far
 
     @Column(name = "interest_rate", nullable = false)
     private double interestRate;

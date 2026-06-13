@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    // Spring Data generates the query from the method name
+    // Spring Data turns this method name into a SQL query automatically.
+    // It fetches all transactions for a given SSN, sorted newest first.
     List<Transaction> findByCustomerSocialSecurityNumberOrderByCreatedAtDesc(String socialSecurityNumber);
 }

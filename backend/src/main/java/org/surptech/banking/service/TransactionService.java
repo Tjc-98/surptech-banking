@@ -22,11 +22,8 @@ public class TransactionService {
         this.customerProfileService = customerProfileService;
     }
 
-    /**
-     * Records a new transaction for a customer.
-     * Returns null if the customer does not exist.
-     * Returns null if the amount is not positive.
-     */
+    // Saves a new transaction and returns it.
+    // Returns null if the amount is zero or negative, or if the customer doesn't exist.
     public TransactionResponse addTransaction(TransactionRequest request) {
         if (request.getAmount() <= 0) {
             return null;
@@ -50,9 +47,7 @@ public class TransactionService {
         return TransactionResponse.from(saved);
     }
 
-    /**
-     * Returns all transactions for a customer, newest first.
-     */
+    // Fetches all transactions for a customer, newest first.
     public List<TransactionResponse> getTransactionHistory(String socialSecurityNumber) {
         return transactionRepository
                 .findByCustomerSocialSecurityNumberOrderByCreatedAtDesc(socialSecurityNumber)

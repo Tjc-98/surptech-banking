@@ -12,6 +12,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
+// Represents a single deposit or withdrawal on a customer's account.
+// Many transactions can belong to one customer - that's the @ManyToOne relationship below.
 @Entity
 @Table(name = "transaction")
 public class Transaction {
@@ -34,7 +36,7 @@ public class Transaction {
     private double amount;
 
     @Column
-    private String description;
+    private String description; // optional note the user can add
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

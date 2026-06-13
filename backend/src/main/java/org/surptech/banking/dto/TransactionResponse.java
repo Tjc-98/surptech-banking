@@ -4,9 +4,8 @@ import org.surptech.banking.entity.Transaction;
 
 import java.time.LocalDateTime;
 
-/**
- * Response object for a single transaction.
- */
+// What we send back to the client after saving a transaction,
+// or when listing a customer's history.
 public class TransactionResponse {
 
     private Long id;

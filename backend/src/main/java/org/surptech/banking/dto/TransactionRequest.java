@@ -2,15 +2,13 @@ package org.surptech.banking.dto;
 
 import org.surptech.banking.entity.Transaction;
 
-/**
- * Request body for adding a new transaction.
- */
+// What the client sends when recording a new deposit or withdrawal.
 public class TransactionRequest {
 
     private String socialSecurityNumber;
-    private Transaction.Type type;
+    private Transaction.Type type;   // DEPOSIT or WITHDRAWAL
     private double amount;
-    private String description;
+    private String description;      // optional note
 
     public String getSocialSecurityNumber() { return socialSecurityNumber; }
     public void setSocialSecurityNumber(String socialSecurityNumber) { this.socialSecurityNumber = socialSecurityNumber; }

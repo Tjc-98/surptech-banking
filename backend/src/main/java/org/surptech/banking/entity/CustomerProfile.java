@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+// Holds the basic personal details for a customer.
 @Entity
 @Table(name = "customer_profile")
 public class CustomerProfile {
