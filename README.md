@@ -26,9 +26,19 @@ Written in Java and TypeScript, this project lets users look up customer persona
 
 ### 1. Start the backend
 
+Set up a local PostgreSQL database and create a database named `surptechdb`, then run:
+
 ```
 cd backend
 mvn spring-boot:run
+```
+
+By default the app connects to `localhost:5432` with username `postgres` and password `postgres`. Override with environment variables if needed:
+
+```
+DB_URL=jdbc:postgresql://localhost:5432/surptechdb
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 ```
 
 The API will be available at `http://localhost:8080`.
@@ -53,18 +63,18 @@ Open `http://localhost:3000` in your browser.
 
 ## Seed Data
 
-Two records are loaded on startup.
+Two records are loaded on startup. The seed script runs automatically when the app starts - Hibernate creates the schema first, then `data.sql` inserts the records.
 
 | SSN | Name | Credit Balance | Interest Rate |
 |-----|------|----------------|---------------|
 | `123-45-6789` | James Smith | $15,000 | 3.5% |
 | `987-65-4321` | John Travolta | $28,000 | 8.5% |
 
-The H2 console is available at `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:surptechdb`).
-
 ## Running Tests
 
 ### Backend
+
+Tests run against an H2 in-memory database via the `test` profile - no PostgreSQL instance needed.
 
 ```
 cd backend
