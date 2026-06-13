@@ -52,9 +52,12 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-      - name: Upload frontend build
+      - name: Upload frontend standalone build
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-build
-          path: frontend/.next/
+          name: frontend-standalone
+          path: |
+            frontend/.next/standalone/
+            frontend/.next/static/
+            frontend/public/
           retention-days: 7

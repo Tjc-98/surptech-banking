@@ -99,7 +99,10 @@ Two GitHub Actions workflows run automatically.
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
 | CI | Every push and pull request | Runs backend unit tests and frontend unit tests in parallel |
-| CD | Push to `main` | Builds the backend JAR and the Next.js production bundle, uploads both as artifacts |
+| CD | Push to `main` | Builds the backend JAR and the Next.js standalone bundle, uploads both as artifacts (7-day retention) |
+
+The backend artifact (`backend-jar`) is a self-contained JAR runnable with `java -jar surptech-banking-1.0.0.jar`.
+The frontend artifact (`frontend-standalone`) contains the standalone Next.js output runnable with `node server.js`.
 
 ## Project Structure
 
