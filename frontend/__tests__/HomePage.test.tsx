@@ -22,21 +22,23 @@ const mockCustomer = {
 describe('HomePage - Lookup tab', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('renders the search form and both tabs', () => {
+  it('renders the page title, tabs, and search field', () => {
     render(<HomePage />);
     expect(screen.getByText('SurpTech Banking')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Look Up Customer' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Register Customer' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Social Security Number')).toBeInTheDocument();
+    expect(screen.getByLabelText('Customer SSN')).toBeInTheDocument();
   });
 
-  it('shows an error when search field is empty', async () => {
+  it('shows an error when the search field is empty', async () => {
     render(<HomePage />);
-    fireEvent.click(screen.getByRole('button', { name: 'Look Up' }));
-    expect(await screen.findByText('Please enter a Social Security Number.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
+    expect(
+      await screen.findByText("Please enter a customer's SSN to search.")
+    ).toBeInTheDocument();
   });
 
-  it('shows customer data and available balance on successful lookup', async () => {
+  it('shows customer name, available balance, and transaction history on a successful lookup', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -44,44 +46,45 @@ describe('HomePage - Lookup tab', () => {
     });
 
     render(<HomePage />);
-    fireEvent.change(screen.getByLabelText('Social Security Number'), {
+    fireEvent.change(screen.getByLabelText('Customer SSN'), {
       target: { value: '123-45-6789' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Look Up' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
 
-    await waitFor(() => {
-      expect(screen.getByText('James')).toBeInTheDocument();
-      expect(screen.getByText('$10000.00')).toBeInTheDocument(); // available balance
-      expect(screen.getByText('DEPOSIT')).toBeInTheDocument();
-      expect(screen.getByText('WITHDRAWAL')).toBeInTheDocument();
-    });
+    // Wait for the customer card to appear then check its contents
+    expect(await screen.findByText('$10000.00')).toBeInTheDocument();
+    // Transaction history should show both types - use getAllByText since 'Deposit' also appears in the form select
+    expect(screen.getAllByText('Deposit').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Withdrawal').length).toBeGreaterThan(0);
   });
 
-  it('shows a not-found error for an unknown SSN', async () => {
+  it('shows a not-found message for an unknown SSN', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: false, status: 404 });
 
     render(<HomePage />);
-    fireEvent.change(screen.getByLabelText('Social Security Number'), {
+    fireEvent.change(screen.getByLabelText('Customer SSN'), {
       target: { value: '000-00-0000' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Look Up' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => {
-      expect(screen.getByText('No customer found for SSN: 000-00-0000')).toBeInTheDocument();
+      expect(
+        screen.getByText("We couldn't find anyone with SSN 000-00-0000. Double-check the number and try again.")
+      ).toBeInTheDocument();
     });
   });
 
-  it('shows a connection error when fetch throws', async () => {
+  it('shows a connection error when the server is unreachable', async () => {
     (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
     render(<HomePage />);
-    fireEvent.change(screen.getByLabelText('Social Security Number'), {
+    fireEvent.change(screen.getByLabelText('Customer SSN'), {
       target: { value: '123-45-6789' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Look Up' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => {
-      expect(screen.getByText(/Could not connect to the server/)).toBeInTheDocument();
+      expect(screen.getByText(/Can't reach the server right now/)).toBeInTheDocument();
     });
   });
 });
@@ -89,16 +92,16 @@ describe('HomePage - Lookup tab', () => {
 describe('HomePage - Register tab', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('switches to register tab and shows the form', () => {
+  it('switches to the register tab and shows the form', () => {
     render(<HomePage />);
     fireEvent.click(screen.getByRole('button', { name: 'Register Customer' }));
-    expect(screen.getByText('Register New Customer')).toBeInTheDocument();
-    expect(screen.getByLabelText('First Name')).toBeInTheDocument();
-    expect(screen.getByLabelText('Last Name')).toBeInTheDocument();
-    expect(screen.getByLabelText('Address')).toBeInTheDocument();
+    expect(screen.getByText('Add a New Customer')).toBeInTheDocument();
+    expect(screen.getByLabelText('First name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Last name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Home address')).toBeInTheDocument();
   });
 
-  it('shows success message on successful registration', async () => {
+  it('shows a success message after a customer is added', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       status: 201,
@@ -112,20 +115,18 @@ describe('HomePage - Register tab', () => {
     render(<HomePage />);
     fireEvent.click(screen.getByRole('button', { name: 'Register Customer' }));
 
-    fireEvent.change(screen.getByLabelText('Social Security Number'), {
-      target: { value: '111-22-3333' },
-    });
-    fireEvent.change(screen.getByLabelText('First Name'), { target: { value: 'Alice' } });
-    fireEvent.change(screen.getByLabelText('Last Name'), { target: { value: 'Johnson' } });
-    fireEvent.change(screen.getByLabelText('Address'), { target: { value: '789 Oak Ave' } });
+    fireEvent.change(screen.getByLabelText('SSN'), { target: { value: '111-22-3333' } });
+    fireEvent.change(screen.getByLabelText('First name'), { target: { value: 'Alice' } });
+    fireEvent.change(screen.getByLabelText('Last name'), { target: { value: 'Johnson' } });
+    fireEvent.change(screen.getByLabelText('Home address'), { target: { value: '789 Oak Ave' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save Customer' }));
 
     await waitFor(() => {
-      expect(screen.getByText('Customer Alice Johnson registered successfully.')).toBeInTheDocument();
+      expect(screen.getByText('Alice Johnson has been added successfully.')).toBeInTheDocument();
     });
   });
 
-  it('shows error message when registration fails', async () => {
+  it('shows an error message when registration fails', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       status: 400,

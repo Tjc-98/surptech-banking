@@ -30,6 +30,7 @@ replay_pid*
 node_modules/
 frontend/.next/
 frontend/out/
+frontend/test-results/
 frontend/npm-debug.log*
 frontend/.env.local
 
