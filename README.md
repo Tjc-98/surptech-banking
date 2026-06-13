@@ -12,8 +12,8 @@ Written in Java and TypeScript, this project lets users look up customer persona
 
 | Component | Tech | Port | Description |
 |-----------|------|------|-------------|
-| [backend](backend/) | Java 21, Spring Boot 3.3.5 | 8080 | REST API. Stores and serves customer and credit profiles. |
-| [frontend](frontend/) | TypeScript, Next.js 14 | 3000 | Web UI. Lets users search for customer information by SSN. |
+| [backend](backend/) | Java 25, Spring Boot 4.0.6 | 8080 | REST API. Stores and serves customer and credit profiles. |
+| [frontend](frontend/) | TypeScript, Next.js 16.2.6 | 3000 | Web UI. Lets users search for customer information by SSN. |
 
 ## Getting Started
 
