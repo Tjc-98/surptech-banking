@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: surptech-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: surptechdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"       # host:container - leave as-is unless port 5432 is already taken
+    volumes:
+      - surptech-db-data:/var/lib/postgresql/data   # data survives container restarts
+
+volumes:
+  surptech-db-data:

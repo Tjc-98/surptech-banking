@@ -23,26 +23,42 @@ The backend is a Spring Boot REST API that stores customer profiles, credit acco
 - Maven 3.8+
 - Node.js 22
 - npm
-- A local PostgreSQL instance with a database called `surptechdb`
+- Docker Desktop (recommended) - or a local PostgreSQL 16 install
 
-### 1. Start the backend
+### 1. Start the database
+
+The easiest way is Docker - one command and you're done:
+
+```
+docker compose up -d
+```
+
+That starts a PostgreSQL 16 container on port `5432` with a database called `surptechdb`. Data persists between restarts thanks to a named volume. To stop it later: `docker compose down`.
+
+If you'd rather not use Docker, create the database manually in your local PostgreSQL:
+
+```sql
+CREATE DATABASE surptechdb;
+```
+
+Either way, the backend uses these defaults. Override them with environment variables if your setup is different:
+
+| Variable | Default |
+|----------|---------|
+| `DB_URL` | `jdbc:postgresql://localhost:5432/surptechdb` |
+| `DB_USERNAME` | `postgres` |
+| `DB_PASSWORD` | `postgres` |
+
+### 2. Start the backend
 
 ```
 cd backend
 mvn spring-boot:run
 ```
 
-By default it connects to `localhost:5432` with username `postgres` and password `postgres`. You can override these with environment variables:
+The API runs at `http://localhost:8080`. Hibernate creates the tables automatically on first run and the seed data is loaded straight after.
 
-```
-DB_URL=jdbc:postgresql://localhost:5432/surptechdb
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-```
-
-The API runs at `http://localhost:8080`.
-
-### 2. Start the frontend
+### 3. Start the frontend
 
 ```
 cd frontend
@@ -109,6 +125,7 @@ To run the frontend artifact: `node server.js`
 
 ```
 surptech-banking/
+├── docker-compose.yml          # spins up the PostgreSQL database
 ├── backend/                    # Spring Boot application
 │   ├── src/main/java/          # controllers, services, entities, repositories
 │   ├── src/main/resources/     # application.properties and seed data
