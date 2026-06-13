@@ -57,9 +57,13 @@ Open `http://localhost:3000` in your browser.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/customer/info?socialSecurityNumber=XXX` | Returns combined customer and credit info |
+| GET | `/api/customer/info?socialSecurityNumber=XXX` | Returns combined customer, credit, and transaction info |
 | POST | `/api/customer/create` | Creates or updates a customer profile |
 | POST | `/api/credit/create` | Creates or updates a credit profile |
+| POST | `/api/transaction/add` | Records a deposit or withdrawal |
+| GET | `/api/transaction/history?socialSecurityNumber=XXX` | Returns transaction history, newest first |
+
+All endpoints validate input and return a JSON `{ "error": "..." }` body on bad requests.
 
 ## Seed Data
 

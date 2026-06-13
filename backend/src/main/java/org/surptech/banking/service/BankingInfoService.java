@@ -8,32 +8,29 @@ import org.surptech.banking.entity.CustomerProfile;
 import java.util.Optional;
 
 /**
- * Service that aggregates customer personal and credit information
- * into a single response object.
+ * Aggregates customer personal, credit, and transaction information into one response.
  */
 @Service
 public class BankingInfoService {
 
     private final CustomerProfileService customerProfileService;
     private final CreditProfileService creditProfileService;
+    private final TransactionService transactionService;
 
     public BankingInfoService(CustomerProfileService customerProfileService,
-                              CreditProfileService creditProfileService) {
+                              CreditProfileService creditProfileService,
+                              TransactionService transactionService) {
         this.customerProfileService = customerProfileService;
         this.creditProfileService = creditProfileService;
+        this.transactionService = transactionService;
     }
 
-    /**
-     * Looks up a customer by SSN and combines their personal and credit information.
-     *
-     * @param socialSecurityNumber the SSN to look up
-     * @return the combined info, or null if neither profile is found
-     */
     public CustomerInfoResponse getCustomerInfo(String socialSecurityNumber) {
-        Optional<CustomerProfile> customerProfile = customerProfileService.getCustomerProfile(socialSecurityNumber);
-        Optional<CreditProfile> creditProfile = creditProfileService.getCreditProfile(socialSecurityNumber);
+        Optional<CustomerProfile> customerProfile =
+                customerProfileService.getCustomerProfile(socialSecurityNumber);
+        Optional<CreditProfile> creditProfile =
+                creditProfileService.getCreditProfile(socialSecurityNumber);
 
-        // If nothing found, return null so the controller can send a 404
         if (customerProfile.isEmpty() && creditProfile.isEmpty()) {
             return null;
         }
@@ -52,8 +49,12 @@ public class BankingInfoService {
             CreditProfile credit = creditProfile.get();
             response.setFullCreditBalance(credit.getFullCreditBalance());
             response.setSpendBalance(credit.getSpendBalance());
+            response.setAvailableBalance(credit.getFullCreditBalance() - credit.getSpendBalance());
             response.setInterestRate(credit.getInterestRate());
         }
+
+        // Include transaction history
+        response.setTransactions(transactionService.getTransactionHistory(socialSecurityNumber));
 
         return response;
     }

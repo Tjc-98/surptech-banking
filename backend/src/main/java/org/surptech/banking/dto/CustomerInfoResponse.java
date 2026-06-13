@@ -1,7 +1,9 @@
 package org.surptech.banking.dto;
 
+import java.util.List;
+
 /**
- * Response object combining customer personal and credit information.
+ * Response object combining customer personal, credit, and transaction information.
  */
 public class CustomerInfoResponse {
 
@@ -14,7 +16,11 @@ public class CustomerInfoResponse {
     // Credit profile fields
     private double fullCreditBalance;
     private double spendBalance;
+    private double availableBalance;
     private double interestRate;
+
+    // Transaction history
+    private List<TransactionResponse> transactions;
 
     public CustomerInfoResponse() {}
 
@@ -36,6 +42,12 @@ public class CustomerInfoResponse {
     public double getSpendBalance() { return spendBalance; }
     public void setSpendBalance(double spendBalance) { this.spendBalance = spendBalance; }
 
+    public double getAvailableBalance() { return availableBalance; }
+    public void setAvailableBalance(double availableBalance) { this.availableBalance = availableBalance; }
+
     public double getInterestRate() { return interestRate; }
     public void setInterestRate(double interestRate) { this.interestRate = interestRate; }
+
+    public List<TransactionResponse> getTransactions() { return transactions; }
+    public void setTransactions(List<TransactionResponse> transactions) { this.transactions = transactions; }
 }
