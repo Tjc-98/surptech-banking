@@ -26,6 +26,13 @@ target/
 hs_err_pid*
 replay_pid*
 
+# Node.js
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/npm-debug.log*
+frontend/.env.local
+
 # IDE files
 .idea/
 *.iml

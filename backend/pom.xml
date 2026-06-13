@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>surptech-banking</name>
-    <description>SurpTech Banking System - a simple banking information lookup application</description>
+    <description>SurpTech Banking System - backend service</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -33,12 +33,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Thymeleaf for HTML templates -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-
         <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,8 +53,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito for unit tests (included transitively via spring-boot-starter-test,
-             listed explicitly for clarity) -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
